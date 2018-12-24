@@ -1,0 +1,22 @@
+{
+  "name": "Mongo_Operations",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "supertest": "^3.3.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha ./test/*.js",
+    "debug_DebugService":"DEBUG=* node --nolazy --inspect-brk=9229 ./Service/debug/debugService.js",
+    "debug":"DEBUG='*Service' node --nolazy --inspect-brk=9229 index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

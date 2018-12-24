@@ -1,0 +1,47 @@
+{
+    "port": 4000,
+    "url": "localhost",
+    "models_locations": "./models/user_api_rest",
+    "mongo_connection": {
+        "URI": "127.0.0.1",
+        "Port": "27017",
+        "Password": "",
+        "UserName": "",
+        "dbName": "user_api_rest"
+    },
+    "notAllowedAttributes": {
+        "user":{
+            "show": [
+                "_id"
+            ],
+            "update": [
+                "id","_id"
+            ]
+        }
+    },
+    "customHeaders": {
+        "user":{
+            "show": {
+                "skip": 0,
+                "limit": 6,
+                "virtualHeaders": "",
+                "fields":[],
+                "requiredFields":[]
+            },
+            "update": {
+                "skip": 0,
+                "limit": 6,
+                "virtualHeaders": "",
+                "fields":[],
+                "requiredFields":[]
+            },
+            "delete":{
+                "skip": 0,
+                "limit": 6,
+                "virtualHeaders": "",
+                "fields":["id"],
+                "requiredFields":[]
+            }
+        }
+    }
+}

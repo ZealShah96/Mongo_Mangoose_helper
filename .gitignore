@@ -1,0 +1,14 @@
+
+
+/models/diagnostic.data
+/models/journal
+/models/mongodbfiles
+/models/user_api_rest
+
+
+/node_modules
+
+*.log
+
+/.vscode
+
