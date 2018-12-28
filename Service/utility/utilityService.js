@@ -19,12 +19,12 @@ exports.checkValueShouldBeInArray = function (value, condition) {
     debug("called.....!!!!!");
     switch (condition) {
         case "notNull":
-            if (notNull.indexOf(value) != -1) {
+            if (notNull.indexOf(value) == -1) {
                 valueFollowedCondition = true;
             }
             break;
         case "notUndefind":
-            if (notUndefinded.indexOf(value) != -1) {
+            if (notUndefinded.indexOf(value) == -1) {
                 valueFollowedCondition = true;
             }
             break;
@@ -34,7 +34,7 @@ exports.checkValueShouldBeInArray = function (value, condition) {
             }
             break;
         case "notEmptyString":
-            if (notEmptyString.indexOf(value) != -1) {
+            if (notEmptyString.indexOf(value) == -1) {
                 valueFollowedCondition = true;
             }
             break;
@@ -49,10 +49,40 @@ exports.checkValueShouldBeInArray = function (value, condition) {
             }
             break;
         case "notEmptyArray":
-            if (value.length>0) {
+            if (value.length > 0) {
                 valueFollowedCondition = true;
             }
             break;
     }
     return valueFollowedCondition;
 };
+
+
+
+/**
+ * @description it will return headers required fields from req perameters
+ */
+exports.findRequiredFieldsFromHeaders = async (req, defaultValues) => {
+    let headersRequiredFields = [];
+    try {
+        headersRequiredFields = req.headers.requiredfields.split(',');
+    }
+    catch (err) {
+        debug("we passed empty arrray so we can fetched default fields.")
+    }
+    let requiredFields = utility.checkValueShouldBeInArray(headersRequiredFields, "notEmptyArray")
+        && utility.checkValueShouldBeInArray(headersRequiredFields, "notUndefindedandnotNull")
+        ? headersRequiredFields
+        : defaultValues;
+    return requiredFields;
+}
+
+
+
+/**
+ * @description it will return to request.
+ */
+exports.response = async (res, response) => {
+
+    res.send(response);
+}

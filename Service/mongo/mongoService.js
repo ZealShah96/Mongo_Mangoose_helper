@@ -1,5 +1,5 @@
 const path = require('path');
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
 const resolve = path.resolve;
 const checkValueShouldBeInArray = require('../utility/utilityService').checkValueShouldBeInArray;
 const utility = require('../utility/utilityService');
@@ -16,13 +16,21 @@ let mongoConnection = mongoose.createConnection();
  */
 exports.mongoDbConnectionCreate = async () => {
     try {
+        4
         debug("In mongo Db Connection Create function !!!!");
         let mongo = findKey('mongo_connection');
         let urlForDB = `mongodb://${mongo.URI}:${mongo.Port}/${mongo.dbName}`;
         debug(`Trying to connect to Mongo db on:- ${urlForDB}`);
         //mongodb://localhost:27017/myapp
         //   127.0.0.1
+
         mongoConnection = await mongoose.connect(`${urlForDB}`, { useNewUrlParser: true });
+        var db = mongoose.connection;
+        //Bind connection to error event (to get notification of connection errors)
+        db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+        // db.once("open", function(callback){
+        //          console.log("Connection Succeeded."); /* Once the database connection has succeeded, the code in db.once is executed. */
+        //     });
         debug("Mongo db is connected.");
         debug(`out from mongo Db Connection Create function !!!!`);
         return mongoConnection;
@@ -51,6 +59,8 @@ exports.findModel = async (modelName) => {
         let modelsLocations = findKey("models_locations");
         //resolving path to it.
         let path = resolve(modelsLocations);
+        //model required.
+        mongoose = require(`${path}/${modelName}`).mongoose;
         //let find model from path
         let model = require(`${path}/${modelName}`).model;
         //it will create connection to provided connection link and that specific db
@@ -84,17 +94,17 @@ exports.create = async (modelName, data, customHeaders = {}) => {
     let operationType = "show";
     customHeaders = await mongoService.findCustomHeaders(customHeaders, modelName, operationType);
     //  let collectionsPresent = mongoConnection.collections;
-    let newUser = new model(data);
+    let newEntry = new model(data);
     return new Promise(async (resolve, reject) => {
         try {
-            let createdData = await newUser.save();
+            let createdData = await newEntry.save();
             let filteredData = await mongoService.filterAttributes(createdData._doc, customHeaders.requiredFields);
-            debug(`${newUser} is inserted in ${model.modelName.toString().toLowerCase()}!!!!!!`);
+            debug(`${newEntry} is inserted in ${model.modelName.toString().toLowerCase()}!!!!!!`);
             debug(`out from create function !!!!`);
             return resolve(filteredData);
         }
         catch (err) {
-            debug(`${newUser} is not inserted in ${model.modelName.toString().toLowerCase()} because of ${JSON.stringify(err)}!!!!!!`);
+            debug(`${newEntry} is not inserted in ${model.modelName.toString().toLowerCase()} because of ${JSON.stringify(err)}!!!!!!`);
             debug(`out from create function !!!!`);
             throw err;
         }
@@ -123,23 +133,26 @@ exports.findOne = async (modelName, condition, customHeaders = {}) => {
     try {
         return new Promise((resolve, reject) => {
             ;
-            model.find(condition, customHeaders.fields).populate(`${customHeaders.virtualConnections}`).skip(customHeaders.skip).limit(1).exec(async (err, docs) => {
-                if (docs != null) {
-                   
-                    let filteredData=[];
-                    if(docs.length>1){
-                         filteredData.push(await mongoService.filterAttributes(mongoService.first(docs)._doc, customHeaders.requiredFields));
+            model.find(condition, customHeaders.fields).populate(`${customHeaders.virtualConnections}`)
+                .skip(customHeaders.skip)
+                .limit(1)
+                .exec(async (err, docs) => {
+                    if (docs != null) {
+
+                        let filteredData = [];
+                        if (docs.length > 1) {
+                            filteredData.push(await mongoService.filterAttributes(mongoService.first(docs)._doc, customHeaders.requiredFields));
+                        }
+                        debug(`out from Find One Function with found data:${JSON.stringify(filteredData)}`);
+                        debug(`out from Find One Function !!!!`);
+                        return resolve(filteredData);
                     }
-                    debug(`out from Find One Function with found data:${JSON.stringify(filteredData)}`);
-                    debug(`out from Find One Function !!!!`);
-                    return resolve(filteredData);
-                }
-                else {
-                    debug(`Find One Function with error ${JSON.stringify(err)}`);
-                    debug(`out from Find One Function !!!!`);
-                    throw err;
-                }
-            });
+                    else {
+                        debug(`Find One Function with error ${JSON.stringify(err)}`);
+                        debug(`out from Find One Function !!!!`);
+                        throw err;
+                    }
+                });
         });
     }
     catch (err) {
@@ -160,24 +173,28 @@ exports.findAll = async (modelName, condition, customHeaders = {}) => {
     try {
         return new Promise((resolve, reject) => {
             ;
-            model.find(condition, customHeaders.fields).populate(`${customHeaders.virtualConnections}`).skip(customHeaders.skip).limit(customHeaders.limit).exec(async (err, docs) => {
-                if (docs != null) {
-                    let filteredData = [];
-                    await docs.forEach(async element => {
-                        let filterIndividualData = await mongoService.filterAttributes(element._doc, customHeaders.requiredFields);
-                        filteredData.push(filterIndividualData);
-                        // debug(filteredData);
-                    });
-                    debug(`out from Find All Function with found data:${JSON.stringify(docs)}`);
-                    debug(`out from Find All Function !!!!`);
-                    return resolve(docs);
-                }
-                else {
-                    debug(`Find All Function exists with error ${JSON.stringify(err)}`);
-                    debug(`out from Find All Function !!!!`);
-                    throw err;
-                }
-            });
+            model.find(condition, customHeaders.fields)
+                .populate(`${customHeaders.virtualConnections}`)
+                .skip(customHeaders.skip)
+                .limit(customHeaders.limit)
+                .exec(async (err, docs) => {
+                    if (docs != null) {
+                        let filteredData = [];
+                        await docs.forEach(async element => {
+                            let filterIndividualData = await mongoService.filterAttributes(element._doc, customHeaders.requiredFields);
+                            filteredData.push(filterIndividualData);
+                            // debug(filteredData);
+                        });
+                        debug(`out from Find All Function with found data:${JSON.stringify(docs)}`);
+                        debug(`out from Find All Function !!!!`);
+                        return resolve(docs);
+                    }
+                    else {
+                        debug(`Find All Function exists with error ${JSON.stringify(err)}`);
+                        debug(`out from Find All Function !!!!`);
+                        throw err;
+                    }
+                });
         });
     }
     catch (err) {
@@ -194,29 +211,50 @@ exports.findAll = async (modelName, condition, customHeaders = {}) => {
 /**
  * @description it will update entry in database.
  */
-exports.updateOne = async (modelName, condition, data, customHeaders = {}) => {
+exports.updateOne = async (modelName, condition, data, customHeaders = {},next) => {
     debug("In update One function !!!!");
+    let operationType = "update";
+    customHeaders = await mongoService.findCustomHeaders(customHeaders, modelName, operationType);
     let model = await findModel(modelName);
-    let allowedDataWhichCanUpdate=await mongoService.filterNotAllowedAttributes(data,findKey("notAllowedAttributes")[modelName]["update"])
-    try {
+    let allowedDataWhichCanUpdate;
+  
+        try {
+            allowedDataWhichCanUpdate = await mongoService.filterNotAllowedAttributes(data, findKey("notAllowedAttributes")[modelName]["update"]);
+        }
+        catch (err) {
+            allowedDataWhichCanUpdate = await mongoService.filterNotAllowedAttributes(data, findKey("notAllowedAttributes")["default"]["update"]);
+        }
         return new Promise((resolve, reject) => {
-            model.findOneAndUpdate(condition, data, { new: true }, (err, doc) => {
+            try {
+            model.findOneAndUpdate(condition, allowedDataWhichCanUpdate, { new: true }, async (err, doc) => {
                 if (err != null) {
-                    throw err;
+                    throw next(err);
                 }
                 else {
                     debug(`Update of data is performed perfectly updated data is:- ${JSON.stringify(doc)}`);
                     debug("Out from update One function !!!!");
-                    return resolve(doc);
+                    let filteredData = [];
+                    if (utility.checkValueShouldBeInArray(doc, "notNull")) {
+                        let data = await mongoService.filterAttributes(doc._doc, customHeaders.requiredFields);
+                        filteredData.push(data);
+                        return resolve(filteredData);
+                    }
+                    else {
+                        let error=new Error("There is no entry regarding this id.");
+                        debug(`Update One operation is not performed successfully because of ${JSON.stringify(error)}`);
+                        debug("Out from update One function !!!!");
+                        return next(error);
+                    }
                 }
             });
+        }
+        catch (err) {
+            debug(`Update One operation is not performed successfully because of ${JSON.stringify(err)}`);
+            debug("Out from update One function !!!!");
+            return next(err);
+        }
         });
-    }
-    catch (err) {
-        debug(`Update One operation is not performed successfully because of ${JSON.stringify(err)}`);
-        debug("Out from update One function !!!!");
-        throw err;
-    }
+    
 }
 
 /**
@@ -225,7 +263,7 @@ exports.updateOne = async (modelName, condition, data, customHeaders = {}) => {
 exports.updateAll = async (modelName, condition, data, customHeaders = {}) => {
     debug("In update All function !!!!");
     let model = await findModel(modelName);
-    let allowedDataWhichCanUpdate=await mongoService.filterNotAllowedAttributes(data,findKey("notAllowedAttributes")[modelName]["update"])
+    let allowedDataWhichCanUpdate = await mongoService.filterNotAllowedAttributes(data, findKey("notAllowedAttributes")[modelName]["update"])
     try {
         return new Promise((resolve, reject) => {
             model.updateMany(condition, data, { new: true, multi: true }, (err, doc) => {
@@ -254,17 +292,22 @@ exports.updateAll = async (modelName, condition, data, customHeaders = {}) => {
  */
 exports.deleteOne = async (modelName, condition, customHeaders = {}) => {
     debug("In delete One function !!!!");
+    let operationType = "update";
+    customHeaders = await mongoService.findCustomHeaders(customHeaders, modelName, operationType);
     let model = await findModel(modelName);
     try {
         return new Promise((resolve, reject) => {
-            model.findOneAndUpdate(condition,{"is_deleted":true}, { new: true }, (err, doc) => {
+            model.findOneAndUpdate(condition, { "is_deleted": true }, { new: true }, async (err, doc) => {
                 if (err != null) {
                     throw err;
                 }
                 else {
                     debug(`delete of data is performed perfectly deleted data is:- ${JSON.stringify(doc)}`);
                     debug("Out from delete One function !!!!");
-                    return resolve(doc);
+                    let deletedData = [];
+                    let data = await mongoService.filterAttributes(doc._doc, customHeaders.requiredFields);
+                    deletedData.push(data);
+                    return resolve(deletedData);
                 }
             });
         });
@@ -276,15 +319,17 @@ exports.deleteOne = async (modelName, condition, customHeaders = {}) => {
     }
 }
 
- /**
- * @description it will delete All entry in database which fullfill condition.
- */
+/**
+* @description it will delete All entry in database which fullfill condition.
+*/
 exports.deleteAll = async (modelName, condition, customHeaders = {}) => {
     debug("In update All function !!!!");
+    let operationType = "update";
+    customHeaders = await mongoService.findCustomHeaders(customHeaders, modelName, operationType);
     let model = await findModel(modelName);
     try {
         return new Promise((resolve, reject) => {
-            model.updateMany(condition, {"is_deleted":true}, { new: true, multi: true }, (err, doc) => {
+            model.updateMany(condition, { "is_deleted": true }, { new: true, multi: true }, (err, doc) => {
                 if (err != null) {
                     throw err;
                 }
@@ -311,29 +356,35 @@ exports.deleteAll = async (modelName, condition, customHeaders = {}) => {
  * @description it will filter attributes 
  */
 exports.filterAttributes = async (data, arrayAttributesToFilter = []) => {
-    let filteredNotAllowedAttributesData = await mongoService.filterNotAllowedAttributes(data);
-    if (arrayAttributesToFilter.length > 0) {
-        //finding data which are not allowed after removing fields that we want.WW
-        let typeOfData = typeof (data);
-        switch (typeOfData) {
-            case "Array":
+    try {
+        let filteredNotAllowedAttributesData = await mongoService.filterNotAllowedAttributes(data);
+        if (arrayAttributesToFilter.length > 0) {
+            //finding data which are not allowed after removing fields that we want.WW
+            let typeOfData = typeof (data);
+            switch (typeOfData) {
+                case "Array":
 
-                break;
-            case "object":
-                var notAllowedAttributesFindAfterRemovingAllowedAttributes = Object.keys(data).filter((prop) => {
-                    if (arrayAttributesToFilter.indexOf(prop) == -1) {
-                        return prop;
-                    }
-                });
-                break;
-            case "default":
-                break;
+                    break;
+                case "object":
+                    var notAllowedAttributesFindAfterRemovingAllowedAttributes = Object.keys(data).filter((prop) => {
+                        if (arrayAttributesToFilter.indexOf(prop) == -1) {
+                            return prop;
+                        }
+                    });
+                    break;
+                case "default":
+                    break;
+            }
+            //using same not allowed function to filter unwanted fields.
+            filteredNotAllowedAttributesData = await mongoService.filterNotAllowedAttributes(filteredNotAllowedAttributesData, notAllowedAttributesFindAfterRemovingAllowedAttributes);
+            // filteredNotAllowedAttributesData
         }
-        //using same not allowed function to filter unwanted fields.
-        filteredNotAllowedAttributesData = await mongoService.filterNotAllowedAttributes(filteredNotAllowedAttributesData, notAllowedAttributesFindAfterRemovingAllowedAttributes);
-        // filteredNotAllowedAttributesData
+        return filteredNotAllowedAttributesData;
     }
-    return filteredNotAllowedAttributesData;
+    catch (err) {
+        debug(`There is some error:${JSON.stringify(err)}`);
+        throw err;
+    }
 }
 
 
@@ -345,7 +396,7 @@ exports.filterNotAllowedAttributes = async (data, notAllowedAttributes = []) => 
     //Not allowed attributes find. 
     notAllowedAttributes = checkValueShouldBeInArray(notAllowedAttributes, "notEmptyArray")
         ? notAllowedAttributes
-        : findKey("notAllowedAttributes")["show"];
+        : findKey("notAllowedAttributes")["user"]["show"];
 
     //printing in console.
     debug(`not allowed attributes:${notAllowedAttributes}`);
@@ -397,14 +448,24 @@ function filterKeyNamesFromObject(object, filterKeyName = "", filterKeyNames = [
  * @description it will find perameters for find when we need to execute skip and limit in find.
  */
 exports.findCustomHeaders = async (customHeaders, modelName, operationType) => {
-    let customHeadersWithDefaultfields = findKey("customHeaders")[modelName][operationType];
+    let customHeadersWithDefaultfields = {};
+
+    try {
+        debug(`custom headers are going to be find with connected to ${modelName} and operation ${operationType}`);
+        customHeadersWithDefaultfields = findKey("customHeaders")[modelName][operationType];
+        debug(`custom headers found  with connected to ${modelName} and operation ${operationType} :-${customHeadersWithDefaultfields}`);
+    }
+    catch (err) {
+        debug(`no default config found for ${modelName} so we will find it from default model config.`)
+        debug(`custom headers are going to be find with connected to default model and operation ${operationType}`);
+        customHeadersWithDefaultfields = findKey("customHeaders")["default"][operationType];
+        debug(`custom headers found  with connected to ${modelName} and operation ${operationType} :-${customHeadersWithDefaultfields}`);
+    }
     try {
         debug("In finding custom headers !!!!");
-
         // customHeadersWithDefaultfields.fields=customHeadersWithDefaultfields.fields;
         Object.keys(customHeaders).forEach(prop => {
             let typeofProp = typeof (customHeaders[prop]);
-
             if (typeofProp == "object" ? checkValueShouldBeInArray(customHeaders[prop], "notEmptyObject") : true) {
                 customHeadersWithDefaultfields[prop] = customHeaders[prop];
             }
