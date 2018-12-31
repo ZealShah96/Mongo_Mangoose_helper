@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "bluebird": "^3.5.3",
     "express": "^4.16.4",
     "mongoose": "^5.4.1",
     "mongoose-auto-increment": "^5.0.1"
@@ -14,8 +15,8 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha ./test/*.js",
-    "debug_DebugService":"DEBUG=* node --nolazy --inspect-brk=9229 ./Service/debug/debugService.js",
-    "debug":"NODE_ENV=dev_rest_api DEBUG='*Service' node --nolazy --inspect-brk=9229 checkService.js"
+    "debug_DebugService": "DEBUG=* node --nolazy --inspect-brk=9229 ./Service/debug/debugService.js",
+    "debug": "NODE_ENV=dev_rest_api DEBUG='*Service' node --nolazy --inspect-brk=9229 checkService.js"
   },
   "keywords": [],
   "author": "",

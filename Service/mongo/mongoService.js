@@ -93,8 +93,14 @@ exports.create = async (modelName, data, customHeaders = {}) => {
     debug("In Creating new entry !!!!");
     let operationType = "show";
     customHeaders = await mongoService.findCustomHeaders(customHeaders, modelName, operationType);
+    try {
+        allowedDataWhichCanUpdate = await mongoService.filterNotAllowedAttributes(data, findKey("notAllowedAttributes")[modelName]["create"]);
+    }
+    catch (err) {
+        allowedDataWhichCanUpdate = await mongoService.filterNotAllowedAttributes(data, findKey("notAllowedAttributes")["default"]["create"]);
+    }
     //  let collectionsPresent = mongoConnection.collections;
-    let newEntry = new model(data);
+    let newEntry = new model(allowedDataWhichCanUpdate);
     return new Promise(async (resolve, reject) => {
         try {
             let createdData = await newEntry.save();
@@ -106,7 +112,7 @@ exports.create = async (modelName, data, customHeaders = {}) => {
         catch (err) {
             debug(`${newEntry} is not inserted in ${model.modelName.toString().toLowerCase()} because of ${JSON.stringify(err)}!!!!!!`);
             debug(`out from create function !!!!`);
-            throw err;
+            return reject(err);
         }
     });
 }
@@ -150,7 +156,7 @@ exports.findOne = async (modelName, condition, customHeaders = {}) => {
                     else {
                         debug(`Find One Function with error ${JSON.stringify(err)}`);
                         debug(`out from Find One Function !!!!`);
-                        throw err;
+                        return reject(err);
                     }
                 });
         });
@@ -192,7 +198,7 @@ exports.findAll = async (modelName, condition, customHeaders = {}) => {
                     else {
                         debug(`Find All Function exists with error ${JSON.stringify(err)}`);
                         debug(`out from Find All Function !!!!`);
-                        throw err;
+                        return reject(err);
                     }
                 });
         });
@@ -211,7 +217,7 @@ exports.findAll = async (modelName, condition, customHeaders = {}) => {
 /**
  * @description it will update entry in database.
  */
-exports.updateOne = async (modelName, condition, data, customHeaders = {},next) => {
+exports.updateOne = async (modelName, condition, data, customHeaders = {}) => {
     debug("In update One function !!!!");
     let operationType = "update";
     customHeaders = await mongoService.findCustomHeaders(customHeaders, modelName, operationType);
@@ -228,7 +234,7 @@ exports.updateOne = async (modelName, condition, data, customHeaders = {},next) 
             try {
             model.findOneAndUpdate(condition, allowedDataWhichCanUpdate, { new: true }, async (err, doc) => {
                 if (err != null) {
-                    throw next(err);
+                    return reject(err);
                 }
                 else {
                     debug(`Update of data is performed perfectly updated data is:- ${JSON.stringify(doc)}`);
@@ -243,7 +249,7 @@ exports.updateOne = async (modelName, condition, data, customHeaders = {},next) 
                         let error=new Error("There is no entry regarding this id.");
                         debug(`Update One operation is not performed successfully because of ${JSON.stringify(error)}`);
                         debug("Out from update One function !!!!");
-                        return next(error);
+                        return reject(error);
                     }
                 }
             });
@@ -251,7 +257,7 @@ exports.updateOne = async (modelName, condition, data, customHeaders = {},next) 
         catch (err) {
             debug(`Update One operation is not performed successfully because of ${JSON.stringify(err)}`);
             debug("Out from update One function !!!!");
-            return next(err);
+            return err;
         }
         });
     
@@ -268,7 +274,7 @@ exports.updateAll = async (modelName, condition, data, customHeaders = {}) => {
         return new Promise((resolve, reject) => {
             model.updateMany(condition, data, { new: true, multi: true }, (err, doc) => {
                 if (err != null) {
-                    throw err;
+                    return reject(err);
                 }
                 else {
                     debug(`Update of data is performed perfectly updated data is:- ${JSON.stringify(doc)}`);
@@ -299,7 +305,7 @@ exports.deleteOne = async (modelName, condition, customHeaders = {}) => {
         return new Promise((resolve, reject) => {
             model.findOneAndUpdate(condition, { "is_deleted": true }, { new: true }, async (err, doc) => {
                 if (err != null) {
-                    throw err;
+                    return reject(err);
                 }
                 else {
                     debug(`delete of data is performed perfectly deleted data is:- ${JSON.stringify(doc)}`);
@@ -331,7 +337,7 @@ exports.deleteAll = async (modelName, condition, customHeaders = {}) => {
         return new Promise((resolve, reject) => {
             model.updateMany(condition, { "is_deleted": true }, { new: true, multi: true }, (err, doc) => {
                 if (err != null) {
-                    throw err;
+                    return reject(err);
                 }
                 else {
                     debug(`delete of data is performed perfectly deleted data is:- ${JSON.stringify(doc)}`);

@@ -1,6 +1,7 @@
 {
     "dev":"/../config/env.json",
     "dev_rest_api":"dev_config.json",
+    "dev_test_api":"dev_config_test.json",
     "prod":"",
     "staging":""
     

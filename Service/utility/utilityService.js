@@ -39,7 +39,7 @@ exports.checkValueShouldBeInArray = function (value, condition) {
             }
             break;
         case "notEmptyObject":
-            if (typeof (notEmptyObject) === typeof (value)) {
+            if (JSON.stringify(notEmptyObject) != JSON.stringify(value)) {
                 valueFollowedCondition = true;
             }
             break;
