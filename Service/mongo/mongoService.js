@@ -11,12 +11,15 @@ let mongoConnection = mongoose.createConnection();
 
 
 //#region model finding and mongo connection 
+
 /**
+ * @method mongoDbConnectionCreate
+ * @returns It will create mongo connection
  * @description it will create connection to mongo database.
  */
 exports.mongoDbConnectionCreate = async () => {
     try {
-        4
+    
         debug("In mongo Db Connection Create function !!!!");
         let mongo = findKey('mongo_connection');
         let urlForDB = `mongodb://${mongo.URI}:${mongo.Port}/${mongo.dbName}`;
@@ -50,8 +53,12 @@ exports.mongoDbConnectionClose = async () => {
 }
 
 /**
+ * @method findModel
+ * @param  {string} modelName :Name of model name
+ * @returns returning obejct of mongoose model
  * @description it will find models from given path for further process.
  */
+
 exports.findModel = async (modelName) => {
     try {
         debug("In find Model function!!!!");
@@ -85,6 +92,7 @@ let findModel = require('./mongoService').findModel;
 //#region Original Process On Mongo db.
 
 //#region create/createAll
+
 /**
  * @description it will create one entry in database.
  */
