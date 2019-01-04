@@ -223,15 +223,15 @@ exports.updateOne = async (modelName, condition, data, customHeaders = {}) => {
     customHeaders = await mongoService.findCustomHeaders(customHeaders, modelName, operationType);
     let model = await findModel(modelName);
     let allowedDataWhichCanUpdate;
-  
+
+    try {
+        allowedDataWhichCanUpdate = await mongoService.filterNotAllowedAttributes(data, findKey("notAllowedAttributes")[modelName]["update"]);
+    }
+    catch (err) {
+        allowedDataWhichCanUpdate = await mongoService.filterNotAllowedAttributes(data, findKey("notAllowedAttributes")["default"]["update"]);
+    }
+    return new Promise((resolve, reject) => {
         try {
-            allowedDataWhichCanUpdate = await mongoService.filterNotAllowedAttributes(data, findKey("notAllowedAttributes")[modelName]["update"]);
-        }
-        catch (err) {
-            allowedDataWhichCanUpdate = await mongoService.filterNotAllowedAttributes(data, findKey("notAllowedAttributes")["default"]["update"]);
-        }
-        return new Promise((resolve, reject) => {
-            try {
             model.findOneAndUpdate(condition, allowedDataWhichCanUpdate, { new: true }, async (err, doc) => {
                 if (err != null) {
                     return reject(err);
@@ -246,7 +246,7 @@ exports.updateOne = async (modelName, condition, data, customHeaders = {}) => {
                         return resolve(filteredData);
                     }
                     else {
-                        let error=new Error("There is no entry regarding this id.");
+                        let error = new Error("There is no entry regarding this id.");
                         debug(`Update One operation is not performed successfully because of ${JSON.stringify(error)}`);
                         debug("Out from update One function !!!!");
                         return reject(error);
@@ -259,8 +259,8 @@ exports.updateOne = async (modelName, condition, data, customHeaders = {}) => {
             debug("Out from update One function !!!!");
             return err;
         }
-        });
-    
+    });
+
 }
 
 /**
@@ -311,9 +311,18 @@ exports.deleteOne = async (modelName, condition, customHeaders = {}) => {
                     debug(`delete of data is performed perfectly deleted data is:- ${JSON.stringify(doc)}`);
                     debug("Out from delete One function !!!!");
                     let deletedData = [];
-                    let data = await mongoService.filterAttributes(doc._doc, customHeaders.requiredFields);
-                    deletedData.push(data);
-                    return resolve(deletedData);
+                    if(doc!=null){
+                        let data = await mongoService.filterAttributes(doc._doc, customHeaders.requiredFields);
+                        deletedData.push(data);
+                        return resolve(deletedData);
+                    }
+                    else{
+                        let error = new Error("There is no entry regarding this id.");
+                        debug(`delete One operation is not performed successfully because of ${JSON.stringify(error)}`);
+                        debug("Out from delete One function !!!!");
+                        return reject(error);
+                    }
+                   
                 }
             });
         });
@@ -502,6 +511,23 @@ exports.first = (listOfElement, index = 0) => {
 
 //#endregion
 
+
+
+//#region removing whole db 
+/**
+ * @description it will remove whole db from database.
+ */
+exports.removeWholeDb = async () => {
+
+    mongoose.connection.db.dropDatabase().then(() => {
+        
+        debug("DB is droped.")
+    }).catch((err) => {
+
+        debug("db is not dropped there is some error" + err.toString());
+    });
+
+}
 
 
 

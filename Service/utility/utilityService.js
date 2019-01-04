@@ -80,9 +80,47 @@ exports.findRequiredFieldsFromHeaders = async (req, defaultValues) => {
 
 
 /**
- * @description it will return to request.
+ * @description it will return response to request.
  */
 exports.response = async (res, response) => {
+    let finalResponse = {};
+    res.status(response.statusCode);
+    delete response.statusCode;
+    Object.keys(response).forEach(element => {
+        if (utility.checkValueShouldBeInArray(response[element], "notUndefindedandnotNull") && utility.checkValueShouldBeInArray(response[element], "notEmptyStringandnotEmptyObject")) {
+            finalResponse[element] = response[element];
+        }
+    });
+    res.send(finalResponse);
+}
 
-    res.send(response);
+/**
+ * @description it will return formatted response back. 
+ */
+exports.createResponseOnPassedDataOnSuccess = async (statusCode, err, data, message) => {
+    if (err != null) {
+        data = null;
+        if (statusCode != 401) {
+            message = err.message;
+        }
+        err = err.stack;
+    }
+    return { "statusCode": statusCode, "err": err, "data": data, "message": message };
+}
+
+
+/**
+ * @description matching 2 objects.
+ */
+
+exports.matchObject = (inputObject, outputObject) => {
+    let matched = true;
+    Object.keys(outputObject).forEach(prop => {
+        debug("property will check:" + prop);
+        if (JSON.stringify(inputObject[prop]) != JSON.stringify(outputObject[prop])) {
+            debug(`${inputObject[prop]} is not matching to ${outputObject[prop]}`)
+            matched = false;
+        }
+    });
+    return matched;
 }
