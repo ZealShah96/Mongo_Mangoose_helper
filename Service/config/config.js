@@ -1,7 +1,7 @@
-const utility = require('./../utility/utilityService');
+const utility = require('../utility/utilityService');
 const config = require('./config');
-const requireEmitter = require('./../event/eventService');
-const debug = require('./../debug/debugService').debugConsole(__dirname, __filename);
+const requireEmitter = require('../event/eventService');
+const debug = require('../debug/debugService').debugConsole(__dirname, __filename);
 
 /**
  * @description it will call event binding create function of require in file.

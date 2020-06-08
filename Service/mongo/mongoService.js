@@ -7,8 +7,140 @@ let mongoService = require('./mongoService');
 let findKey = require('../config/config').findVariableAvaiableInConfiguration;
 let closeDbConnection = require('./mongoService').mongoDbConnectionClose;
 const debug = require('../debug/debugService').debugConsole(__dirname, __filename);
-let mongoConnection = mongoose.createConnection();
+let configPerameterfetch = require(path.resolve('./service/config')).findConfigPerameter;
+let mongoConnection = [];
+let mongooseDefaultConnectionValues = {
+    port: 4000,
+    options: {
+        useNewUrlParser: true
+        // useUnifiedTopology: true,
+        // useCreateIndex: true,
+        // useFindAndModify: false,
+        // autoIndex: false, // Don't build indexes
+        // poolSize: 10, // Maintain up to 10 socket connections
+        // serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+        // socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+        // family: 4
+    }
+}
+let _ = require('lodash');
+/**Follow multiple mongo connection */
+let followMultipleMongo = true;
+let mongoConnectionIndex = 0;
 
+//#region model Database connection 
+
+module.createNewEntry = (passeddata) => {
+    return new Promise((resolve, reject) => {
+        var { locationOfModel, data, operationsContext } = passeddata;
+        let { parentData } = data;
+        let mongo_connection = require(path.resolve(locationOfModel)).model;
+        if (!_.isEmpty(operationsContext)) {
+            Object.keys(operationsContext).forEach((element, index, array) => {
+                if (!_.isEmpty(element)) {
+                    let dataToPassInChildFunction = {};
+                    dataToPassInChildFunction = _.cloneDeep(operationsContext[element]);
+                    if (_.isBoolean(dataToPassInChildFunction.objectToPassIntoFunction.
+                        passParentFunctionData) && dataToPassInChildFunction.objectToPassIntoFunction.
+                            passParentFunctionData) {
+                        dataToPassInChildFunction["objectToPassIntoFunction"]["parentData"] = data;
+                    }
+                    module.mongoOperationExceution(dataToPassInChildFunction).then(objectToPassIntoFunction => {
+                        if (!_.isEmpty(objectToPassIntoFunction)) {
+                            mongo_connection.create(objectToPassIntoFunction).then(val1 => {
+                                val1.save().then(val => {
+                                    console.log(val);
+                                }).catch(val => {
+                                    console.log(val);
+                                });
+                            });
+                        }
+                        else {
+                            console.log("I think someone try same data addition again.")
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            mongo_connection.create(objectToPassIntoFunction).then(val1 => {
+                val1.save().then(val => {
+                    console.log(val);
+                }).catch(val => {
+                    console.log(val);
+                });
+            });
+        }
+
+    });
+}
+
+
+module.findCount = (passeddata) => {
+    return new Promise((resolve, reject) => {
+        try {
+            var { locationOfModel, data, operationsContext } = passeddata;
+            let { parentData, primaryKey, reAssigning,
+                passParentFunctionData } = data;
+            let filterCondition = {};
+            if (_.isBoolean(passParentFunctionData) && passParentFunctionData) {
+                data = parentData;
+            }
+            if (!_.isEmpty(primaryKey)) {
+                if (!_.isEmpty(filterCondition)) {
+                    filterCondition = {};
+                }
+                filterCondition[primaryKey] = data[primaryKey];
+            }
+            let mongo_connection = require(path.resolve(locationOfModel)).model;
+
+            mongo_connection.count(filterCondition, (err, res) => {
+                if (res > 0) {
+                    return resolve(null);
+                }
+                return resolve(parentData);
+            }).catch(e => {
+                console.log(e);
+            });
+        }
+        catch (e) {
+            console.log(e);
+        }
+
+    });
+}
+
+
+module.mongoOperationExceution = (mongoOperation) => {
+    return new Promise((resolve, reject) => {
+        let { functioName, locationOfModel, objectToPassIntoFunction, operationsContext } = mongoOperation;
+        if (!_.isEmpty(functioName) && !_.isEmpty(locationOfModel) && !_.isEmpty(objectToPassIntoFunction)) {
+            configPerameterfetch("mongo_connection").then((value) => {
+                console.log(value);
+                mongoService.mongoDbConnectionCreate(value).then(con => {
+                    let perameterToPassedInFunction = {};
+                    perameterToPassedInFunction["locationOfModel"] = locationOfModel;
+                    perameterToPassedInFunction["mongoConnection"] = con;
+                    perameterToPassedInFunction["data"] = _.cloneDeep(objectToPassIntoFunction);
+                    perameterToPassedInFunction["operationsContext"] = operationsContext;
+                    module[functioName](perameterToPassedInFunction).then(val => {
+                        console.log(val);
+                        resolve(val);
+                    });
+                }).catch(e => {
+                    console.log(e);
+                });
+            }).catch(err => {
+                console.log(err);
+            });
+        }
+        else {
+            console.log("undefined error");
+        }
+    });
+}
+
+//#endregion
 
 //#region model finding and mongo connection 
 
@@ -17,32 +149,28 @@ let mongoConnection = mongoose.createConnection();
  * @returns It will create mongo connection
  * @description it will create connection to mongo database.
  */
-exports.mongoDbConnectionCreate = async () => {
-    try {
-    
-        debug("In mongo Db Connection Create function !!!!");
-        let mongo = findKey('mongo_connection');
-        let urlForDB = `mongodb://${mongo.URI}:${mongo.Port}/${mongo.dbName}`;
-        debug(`Trying to connect to Mongo db on:- ${urlForDB}`);
-        //mongodb://localhost:27017/myapp
-        //   127.0.0.1
-
-        mongoConnection = await mongoose.connect(`${urlForDB}`, { useNewUrlParser: true });
-        var db = mongoose.connection;
-        //Bind connection to error event (to get notification of connection errors)
-        db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-        // db.once("open", function(callback){
-        //          console.log("Connection Succeeded."); /* Once the database connection has succeeded, the code in db.once is executed. */
-        //     });
-        debug("Mongo db is connected.");
-        debug(`out from mongo Db Connection Create function !!!!`);
-        return mongoConnection;
-    }
-    catch (err) {
-        debug(`Mongo db connection is not established because of ${JSON.stringify(err)}!!!!!!`);
-        debug(`out from mongo Db Connection Create function !!!!`);
-        throw err;
-    }
+exports.mongoDbConnectionCreate = async (mongoOptions) => {
+    return new Promise((resolve, reject) => {
+        try {
+            let { uri, port, dbname, options } = _.merge(mongooseDefaultConnectionValues, mongoOptions)
+            debug("In mongo Db Connection Create function !!!!");
+            let urlForDB = `mongodb://${uri}:${port}/${dbname}`;
+            debug(`Trying to connect to Mongo db on:- ${urlForDB}`)
+            mongoConnection[mongoConnectionIndex] = mongoose.connect(`${urlForDB}`, options).then(con => {
+                debug("Mongo db is connected.");
+                debug(`out from mongo Db Connection Create function !!!!`);
+                return resolve(con);
+            }).catch(e => {
+                console.log(e);
+                return reject(e);
+            });
+        }
+        catch (e) {
+            debug(`Mongo db connection is not established because of ${JSON.stringify(e)}!!!!!!`);
+            debug(`Out from mongo Db Connection Create function !!!!`);
+            return reject(e);
+        }
+    });
 }
 
 /**
@@ -125,6 +253,12 @@ exports.create = async (modelName, data, customHeaders = {}) => {
     });
 }
 
+/**
+ * @description it will create one entry in database.
+ */
+exports.create = (req, res) => {
+
+}
 
 /**
  * @description it will create multiple entry in database.
@@ -319,18 +453,18 @@ exports.deleteOne = async (modelName, condition, customHeaders = {}) => {
                     debug(`delete of data is performed perfectly deleted data is:- ${JSON.stringify(doc)}`);
                     debug("Out from delete One function !!!!");
                     let deletedData = [];
-                    if(doc!=null){
+                    if (doc != null) {
                         let data = await mongoService.filterAttributes(doc._doc, customHeaders.requiredFields);
                         deletedData.push(data);
                         return resolve(deletedData);
                     }
-                    else{
+                    else {
                         let error = new Error("There is no entry regarding this id.");
                         debug(`delete One operation is not performed successfully because of ${JSON.stringify(error)}`);
                         debug("Out from delete One function !!!!");
                         return reject(error);
                     }
-                   
+
                 }
             });
         });
@@ -528,7 +662,7 @@ exports.first = (listOfElement, index = 0) => {
 exports.removeWholeDb = async () => {
 
     mongoose.connection.db.dropDatabase().then(() => {
-        
+
         debug("DB is droped.")
     }).catch((err) => {
 
@@ -538,4 +672,4 @@ exports.removeWholeDb = async () => {
 }
 
 
-
+exports.module = module;

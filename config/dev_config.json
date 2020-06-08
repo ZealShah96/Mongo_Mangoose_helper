@@ -1,0 +1,141 @@
+{
+    "port": 4000,
+    "url": "localhost",
+    "models_locations": "./models/",
+    "mongo_connection": {
+        "uri": "127.0.0.1",
+        "port": "27017",
+        "password": "",
+        "username": "",
+        "dbname": "mainDB"
+    },
+    "config_file_location": "./service/config",
+    "models": [
+        {
+            "name": "table",
+            "model_location": "./model/table",
+            "primaryKey":"name",
+            "notAllowedPerameters": [],
+            "allowedOperationsContext": {
+                "create": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "update": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "delete": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [
+                        "id"
+                    ],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "show": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                }
+            }
+        },
+        {
+            "name": "user",
+            "model_location": "./model/user",
+            "notAllowedPerameters": [],
+            "primaryKey":"userName",
+            "allowedOperationsContext": {
+                "create": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "update": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "delete": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [
+                        "id"
+                    ],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "show": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                }
+            }
+        },
+        {
+            "name": "socialLink",
+            "model_location": "./model/socialLink",
+            "primaryKey":"name",
+            "notAllowedPerameters": [],
+            "allowedOperationsContext": {
+                "create": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "update": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "delete": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [
+                        "id"
+                    ],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "show": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                }
+            }
+        }
+    ]
+}
