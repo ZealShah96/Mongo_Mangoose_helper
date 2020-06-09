@@ -35,46 +35,77 @@ module.createNewEntry = (passeddata) => {
         var { locationOfModel, data, operationsContext } = passeddata;
         let { parentData } = data;
         let mongo_connection = require(path.resolve(locationOfModel)).model;
-        if (!_.isEmpty(operationsContext)) {
-            Object.keys(operationsContext).forEach((element, index, array) => {
-                if (!_.isEmpty(element)) {
-                    let dataToPassInChildFunction = {};
-                    dataToPassInChildFunction = _.cloneDeep(operationsContext[element]);
-                    if (_.isBoolean(dataToPassInChildFunction.objectToPassIntoFunction.
-                        passParentFunctionData) && dataToPassInChildFunction.objectToPassIntoFunction.
-                            passParentFunctionData) {
-                        dataToPassInChildFunction["objectToPassIntoFunction"]["parentData"] = data;
-                    }
-                    module.mongoOperationExceution(dataToPassInChildFunction).then(objectToPassIntoFunction => {
-                        if (!_.isEmpty(objectToPassIntoFunction)) {
-                            mongo_connection.create(objectToPassIntoFunction).then(val1 => {
-                                val1.save().then(val => {
-                                    console.log(val);
-                                }).catch(val => {
-                                    console.log(val);
-                                });
-                            });
-                        }
-                        else {
-                            console.log("I think someone try same data addition again.")
-                        }
+        let allPromise = module.processOperationsContextAndPassAsPromise(operationsContext, data);
+        allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "create"));
+        Promise.all(allPromise).then(objectToPassIntoFunction => {
+            let flattenObjects = module.flattenPromiseObject(objectToPassIntoFunction);
+            let {notAllowedAttributes}=flattenObjects;
+            if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
+                mongo_connection.create(flattenObjects.objectToPassIntoFunction).then(createdData => {
+                    mongo_connection.findOne({ "id": createdData.id }, notAllowedAttributes).then(filterfetchedDatas => {
+                        return resolve(filterfetchedDatas);
                     });
-                }
-            });
-        }
-        else {
-            mongo_connection.create(objectToPassIntoFunction).then(val1 => {
-                val1.save().then(val => {
-                    console.log(val);
-                }).catch(val => {
-                    console.log(val);
                 });
-            });
-        }
-
+            }
+            else {
+                console.log("I think someone try same data addition again.")
+                return resolve("I think someone try same data addition again.");
+            }
+        });
     });
 }
 
+module.flattenPromiseObject=(array)=>{
+    let flattenObjects = {};
+    array.forEach((value, index, array) => {
+        Object.keys(value).forEach((key, index, array) => {
+            flattenObjects[key] = value[key];
+        });
+    });
+    return flattenObjects;
+}
+
+module.fetchNotAllowedAttributes = (mongo_connection, operation) => {
+    return new Promise((resolve, reject) => {
+        module.filterAttribute(mongo_connection.modelName, operation).then(filterAttributeFetchedData => {
+            filterAttributeFetchedData.notAllowedToTouch.push("isNew");
+            let notAllowedAttributes = _.reduce(filterAttributeFetchedData.notAllowedToTouch, function (obj, param) {
+                obj[param] = 0
+                return obj;
+            }, {});
+            return resolve({ "notAllowedAttributes": notAllowedAttributes,"allowedAttributes":filterAttributeFetchedData.requiredFields });
+        });
+    });
+}
+
+module.processOperationsContextAndPassAsPromise = (operationsContext, data) => {
+    let promiseArray = [];
+    if (!_.isEmpty(operationsContext)) {
+        Object.keys(operationsContext).forEach((element, index, array) => {
+            if (!_.isEmpty(element)) {
+                let dataToPassInChildFunction = {};
+                dataToPassInChildFunction = _.cloneDeep(operationsContext[element]);
+                if (_.isBoolean(dataToPassInChildFunction.objectToPassIntoFunction.
+                    passParentFunctionData) && dataToPassInChildFunction.objectToPassIntoFunction.
+                        passParentFunctionData) {
+                    dataToPassInChildFunction["objectToPassIntoFunction"]["parentData"] = data;
+                }
+                promiseArray.push(new Promise((resolve, reject) => {
+                    module.mongoOperationExceution(dataToPassInChildFunction).then(objectToPassIntoFunction => {
+                        resolve({ "objectToPassIntoFunction": objectToPassIntoFunction });
+                    });
+                })
+                )
+            }
+        });
+    }
+    else{
+        promiseArray.push(new Promise((resolve, reject) => {
+            resolve({ "objectToPassIntoFunction": data });
+        }));
+    }
+    return promiseArray;
+};
 
 module.findCount = (passeddata) => {
     return new Promise((resolve, reject) => {
@@ -110,7 +141,6 @@ module.findCount = (passeddata) => {
     });
 }
 
-
 module.mongoOperationExceution = (mongoOperation) => {
     return new Promise((resolve, reject) => {
         let { functioName, locationOfModel, objectToPassIntoFunction, operationsContext } = mongoOperation;
@@ -137,6 +167,51 @@ module.mongoOperationExceution = (mongoOperation) => {
         else {
             console.log("undefined error");
         }
+    });
+}
+
+module.findAll = (passeddata) => {
+    return new Promise((resolve, reject) => {
+        var { locationOfModel, data, operationsContext } = passeddata;
+        let { parentData, filterCondition } = data;
+        let mongo_connection = require(path.resolve(locationOfModel)).model;
+        let allPromise = module.processOperationsContextAndPassAsPromise(operationsContext, data);
+        allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "show"));
+        Promise.all(allPromise).then(objectToPassIntoFunction => {
+            let flattenObjects = module.flattenPromiseObject(objectToPassIntoFunction);
+            let {notAllowedAttributes,allowedAttributes}=flattenObjects;
+            if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
+                mongo_connection.find(filterCondition, notAllowedAttributes).then((findFilterFetchedData) => {
+                    console.log(findFilterFetchedData);
+                    let filteredData=findFilterFetchedData.filter(x=>{
+                        let y=_.omitBy(x, _.isUndefined);
+                        y=_.pick(y,allowedAttributes);
+                        return y;
+                    });
+                    return resolve(filteredData);
+                });
+            }
+            else {
+                console.log("I think there are some issues in to find all function.");
+                return resolve("I think there are some issues in to find all function.");
+            }
+        });
+    });
+}
+
+module.filterAttribute = (modelName, operation) => {
+    return new Promise((resolve, reject) => {
+        let mongo_connection = require(path.resolve("./model/table")).model;
+        mongo_connection.findOne({ name: modelName }, (err, res) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                let filterdata = res.allowedOperationsContext[operation];
+                
+                return resolve(filterdata);
+            }
+        });
     });
 }
 
