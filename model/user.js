@@ -6,6 +6,7 @@ var user = new Schema({
   username:{type:String,default:"userid123"},
   password:{type:String,default:"P@ssword123"},
   date: { type: Date, default: Date.now },
+  isDeleted:{type:Boolean,default:false}
 });
 
 var model = mongoose.model("user", user);

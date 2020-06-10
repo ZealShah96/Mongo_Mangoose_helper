@@ -44,7 +44,7 @@ module.createNewEntry = (passeddata) => {
                 mongo_connection.create(flattenObjects.objectToPassIntoFunction).then(createdData => {
                     let passingDataForGetAll={
                         data:{
-                            "filterCondition":filterCondition
+                            "filterCondition":{}
                         },
                         "operationsContext":operationsContext,
                         "locationOfModel":locationOfModel
@@ -104,6 +104,7 @@ module.processOperationsContextAndPassAsPromise = (operationsContext, data) => {
                         passParentFunctionData) {
                     dataToPassInChildFunction["objectToPassIntoFunction"]["parentData"] = data;
                 }
+              
                 promiseArray.push(new Promise((resolve, reject) => {
                     module.mongoOperationExceution(dataToPassInChildFunction).then(objectToPassIntoFunction => {
                         resolve({ "objectToPassIntoFunction": objectToPassIntoFunction });
@@ -127,7 +128,7 @@ module.findCount = (passeddata) => {
             var { locationOfModel, data, operationsContext } = passeddata;
             let { parentData, primaryKey, reAssigning,
                 passParentFunctionData } = data;
-            let filterCondition = {};
+            let filterCondition = {"isDeleted":false};
             if (_.isBoolean(passParentFunctionData) && passParentFunctionData) {
                 data = parentData;
             }
@@ -137,8 +138,8 @@ module.findCount = (passeddata) => {
                 }
                 filterCondition[primaryKey] = data[primaryKey];
             }
-            let mongo_connection = require(path.resolve(locationOfModel)).model;
 
+            let mongo_connection = require(path.resolve(locationOfModel)).model;
             mongo_connection.count(filterCondition, (err, res) => {
                 if (res > 0) {
                     return resolve(null);
@@ -182,6 +183,19 @@ module.mongoOperationExceution = (mongoOperation) => {
             console.log("undefined error");
         }
     });
+}
+
+module.filterConditionFunction=(filterCondition,onlyIncludeDeleted)=>{
+    if(!_.isEmpty(filterCondition) && _.isBoolean(onlyIncludeDeleted) && onlyIncludeDeleted){
+        filterCondition["isDeleted"]=true;
+    }
+    return filterCondition;
+}
+
+module.makingFilterConditionProper=(data)=>{
+    let { parentData, filterCondition,onlyIncludeDeleted } = data;
+    data[filterCondition]=module.filterConditionFunction(filterCondition,onlyIncludeDeleted);
+    return data;
 }
 
 module.findAll = (passeddata) => {
@@ -271,7 +285,7 @@ module.updateOne = (passeddata) => {
 module.updateAll = (passeddata) => {
     return new Promise((resolve, reject) => {
         var { locationOfModel, data, operationsContext } = passeddata;
-        let { parentData, updatedata, filterCondition } = data;
+        let { parentData, updatedata, filterCondition,onlyIncludeDeleted } = data;
         let mongo_connection = require(path.resolve(locationOfModel)).model;
         let allPromise = module.processOperationsContextAndPassAsPromise(operationsContext, module.getTempModeldata(locationOfModel, data));
         allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "update"));
@@ -283,16 +297,18 @@ module.updateAll = (passeddata) => {
                     multi: true,
                     new: true
                 }).then(updatedData => {
-                    if (!_.isEmpty(updatedData)) {
+                    if (updatedData.nModified>0) {
                         let passingDataForGetAll={
                             data:{
-                                "filterCondition":filterCondition
+                                "filterCondition":module.filterConditionFunction(filterCondition,onlyIncludeDeleted)
                             },
                             "operationsContext":operationsContext,
                             "locationOfModel":locationOfModel
                         }
                         module.findAll(passingDataForGetAll).then(findAllFetchedData => {
                             return resolve(findAllFetchedData);
+                        }).catch(e=>{
+                            console.log(e);
                         });
                     }
                     else {
@@ -308,22 +324,26 @@ module.updateAll = (passeddata) => {
     });
 }
 
-
 module.deleteOne=(passeddata)=>{
     return new Promise((resolve, reject) => {
         var { locationOfModel, data, operationsContext } = passeddata;
-        let { parentData, updatedata, filterCondition } = data;
+        let { parentData, updatedata, filterCondition } = module.makingFilterConditionProper(data);
         let mongo_connection = require(path.resolve(locationOfModel)).model;
         let allPromise = module.processOperationsContextAndPassAsPromise(operationsContext, module.getTempModeldata(locationOfModel, data));
         allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "delete"));
         Promise.all(allPromise).then(objectToPassIntoFunction => {
             let flattenObjects = module.flattenPromiseObject(objectToPassIntoFunction);
-            let { notAllowedAttributes } = flattenObjects;
             if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
-                mongo_connection.updateMany(filterCondition, { "$set": updatedata }, {
-                    multi: true,
-                    new: true
-                }).then(updatedData => {
+                let passingDataForUpdateAll={
+                    data:{
+                        "filterCondition":filterCondition,
+                        "updatedata":{"isDeleted":true},
+                        "onlyIncludeDeleted":true
+                    },
+                    "operationsContext":operationsContext,
+                    "locationOfModel":locationOfModel
+                }
+                module.updateAll(passingDataForUpdateAll).then(updatedData => {
                     if (!_.isEmpty(updatedData)) {
                         let passingDataForGetAll={
                             data:{
@@ -339,12 +359,16 @@ module.deleteOne=(passeddata)=>{
                     else {
                         console.log("no data updated");
                     }
+                }).catch(e=>{
+                    console.log(e);
                 });
             }
             else {
                 console.log("I think someone try same data addition again.")
                 return resolve("I think someone try same data addition again.");
             }
+        }).catch(e=>{
+            console.log(e);
         });
     });
 }

@@ -7,6 +7,7 @@ var socialLink = new Schema({
   socialLinksContext: Object,
   specialityContext:Object,
   date: { type: Date, default: Date.now },
+  isDeleted:{type:Boolean,default:false}
 });
 
 var model = mongoose.model("socialLink", socialLink);

@@ -7,6 +7,7 @@ var table = new Schema({
   createdBy: String,
   model_location:String,
   date: { type: Date, default: Date.now },
+  isDeleted:{type:Boolean,default:false}
 });
 
 var model = mongoose.model("table", table);
