@@ -26,7 +26,7 @@ configPerameterfetch("models").then((value) => {
 let passeddata = {};
 passeddata["functioName"] = "createNewEntry";
 passeddata["locationOfModel"] = "./model/user";
-passeddata["objectToPassIntoFunction"] = { 'name': 'zealsshah123' };
+passeddata["objectToPassIntoFunction"] = { 'username': 'zealsshah123' };
 passeddata["operationsContext"] = {
     "notAllowedSameValueAddition": {
         "functioName": "findCount", "locationOfModel": "./model/user", "objectToPassIntoFunction": { "primaryKey": "username", "passParentFunctionData": true, "reAssigning": true }
@@ -41,6 +41,27 @@ passeddata1["objectToPassIntoFunction"] = { "filterCondition": {} };
 mongoService.module.mongoOperationExceution(passeddata1).then(val => console.log(`data:${val}`));
 
 
+passeddata1["functioName"] = "updateOne";
+passeddata1["locationOfModel"] = "./model/user";
+passeddata1["objectToPassIntoFunction"] = { "filterCondition": { name: "zealshah1" }, "updatedata": { name: "zealshah1" } };
+mongoService.module.mongoOperationExceution(passeddata1).then(val => console.log(`data:${val}`));
+
+
+passeddata1["functioName"] = "updateAll";
+passeddata1["locationOfModel"] = "./model/user";
+passeddata1["objectToPassIntoFunction"] = { "filterCondition": { password: "P@ssword1231" }, "updatedata": { password: "P@ssword1231" } };
+mongoService.module.mongoOperationExceution(passeddata1).then(val => console.log(`data:${val}`));
+
+
+passeddata1["functioName"] = "deleteOne";
+passeddata1["locationOfModel"] = "./model/user";
+passeddata1["objectToPassIntoFunction"] = { "filterCondition": { password: "P@ssword1231" } };
+mongoService.module.mongoOperationExceution(passeddata1).then(val => console.log(`data:${val}`));
+
+passeddata1["functioName"] = "deleteAll";
+passeddata1["locationOfModel"] = "./model/user";
+passeddata1["objectToPassIntoFunction"] = { "filterCondition": { password: "P@ssword1231" } };
+mongoService.module.mongoOperationExceution(passeddata1).then(val => console.log(`data:${val}`));
 /**
  * , "operationsContext": { "notAllowedSameValueAddition": { "functioName": "findCount", "locationOfModel": "./model/table", "objectToPassIntoFunction": { "primaryKey": "name", "passParentFunctionData": true, "reAssigning": true } } }
  */

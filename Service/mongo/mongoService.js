@@ -34,9 +34,7 @@ module.createNewEntry = (passeddata) => {
     return new Promise((resolve, reject) => {
         var { locationOfModel, data, operationsContext } = passeddata;
         let { parentData } = data;
-        
         let mongo_connection = require(path.resolve(locationOfModel)).model;
-
         let allPromise = module.processOperationsContextAndPassAsPromise(operationsContext, module.getTempModeldata(locationOfModel, data));
         allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "create"));
         Promise.all(allPromise).then(objectToPassIntoFunction => {
@@ -44,8 +42,15 @@ module.createNewEntry = (passeddata) => {
             let { notAllowedAttributes } = flattenObjects;
             if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
                 mongo_connection.create(flattenObjects.objectToPassIntoFunction).then(createdData => {
-                    mongo_connection.findOne({ "id": createdData.id }, notAllowedAttributes).then(filterfetchedDatas => {
-                        return resolve(filterfetchedDatas);
+                    let passingDataForGetAll={
+                        data:{
+                            "filterCondition":filterCondition
+                        },
+                        "operationsContext":operationsContext,
+                        "locationOfModel":locationOfModel
+                    }
+                    module.findAll(passingDataForGetAll).then(findAllFetchedData => {
+                        return resolve(findAllFetchedData);
                     });
                 });
             }
@@ -60,7 +65,7 @@ module.createNewEntry = (passeddata) => {
 module.getTempModeldata = (modelLocation, data) => {
     let model = require(path.resolve(modelLocation)).model;
     let tempdata = new model(data);
-   // console.log(tempdata);
+    // console.log(tempdata);
     return tempdata;
 }
 
@@ -192,10 +197,11 @@ module.findAll = (passeddata) => {
             if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
                 mongo_connection.find(filterCondition, notAllowedAttributes).then((findFilterFetchedData) => {
                     console.log(findFilterFetchedData);
-                    let filteredData = findFilterFetchedData.filter(x => {
+                    let filteredData =[];
+                     findFilterFetchedData.filter(x => {
                         let y = _.omitBy(x, _.isUndefined);
                         y = _.pick(y, allowedAttributes);
-                        return y;
+                        filteredData.push(y);
                     });
                     return resolve(filteredData);
                 });
@@ -224,6 +230,124 @@ module.filterAttribute = (modelName, operation) => {
     });
 }
 
+module.updateOne = (passeddata) => {
+    return new Promise((resolve, reject) => {
+        var { locationOfModel, data, operationsContext } = passeddata;
+        let { parentData, updatedata, filterCondition } = data;
+        let mongo_connection = require(path.resolve(locationOfModel)).model;
+        let allPromise = module.processOperationsContextAndPassAsPromise(operationsContext, module.getTempModeldata(locationOfModel, data));
+        allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "update"));
+        Promise.all(allPromise).then(objectToPassIntoFunction => {
+            let flattenObjects = module.flattenPromiseObject(objectToPassIntoFunction);
+            if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
+                mongo_connection.findOneAndUpdate(filterCondition, updatedata, {
+                    new: true
+                }).then(updatedData => {
+                    if (!_.isEmpty(updatedData)) {
+                        let passingDataForGetAll={
+                            data:{
+                                "filterCondition":filterCondition
+                            },
+                            "operationsContext":operationsContext,
+                            "locationOfModel":locationOfModel
+                        }
+                        module.findAll(passingDataForGetAll).then(findAllFetchedData => {
+                            return resolve(findAllFetchedData);
+                        });
+                    }
+                    else {
+                        console.log("no data updated");
+                    }
+                });
+            }
+            else {
+                console.log("I think someone try same data addition again.")
+                return resolve("I think someone try same data addition again.");
+            }
+        });
+    });
+}
+
+module.updateAll = (passeddata) => {
+    return new Promise((resolve, reject) => {
+        var { locationOfModel, data, operationsContext } = passeddata;
+        let { parentData, updatedata, filterCondition } = data;
+        let mongo_connection = require(path.resolve(locationOfModel)).model;
+        let allPromise = module.processOperationsContextAndPassAsPromise(operationsContext, module.getTempModeldata(locationOfModel, data));
+        allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "update"));
+        Promise.all(allPromise).then(objectToPassIntoFunction => {
+            let flattenObjects = module.flattenPromiseObject(objectToPassIntoFunction);
+            let { notAllowedAttributes } = flattenObjects;
+            if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
+                mongo_connection.updateMany(filterCondition, { "$set": updatedata }, {
+                    multi: true,
+                    new: true
+                }).then(updatedData => {
+                    if (!_.isEmpty(updatedData)) {
+                        let passingDataForGetAll={
+                            data:{
+                                "filterCondition":filterCondition
+                            },
+                            "operationsContext":operationsContext,
+                            "locationOfModel":locationOfModel
+                        }
+                        module.findAll(passingDataForGetAll).then(findAllFetchedData => {
+                            return resolve(findAllFetchedData);
+                        });
+                    }
+                    else {
+                        console.log("no data updated");
+                    }
+                });
+            }
+            else {
+                console.log("I think someone try same data addition again.")
+                return resolve("I think someone try same data addition again.");
+            }
+        });
+    });
+}
+
+
+module.deleteOne=(passeddata)=>{
+    return new Promise((resolve, reject) => {
+        var { locationOfModel, data, operationsContext } = passeddata;
+        let { parentData, updatedata, filterCondition } = data;
+        let mongo_connection = require(path.resolve(locationOfModel)).model;
+        let allPromise = module.processOperationsContextAndPassAsPromise(operationsContext, module.getTempModeldata(locationOfModel, data));
+        allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "delete"));
+        Promise.all(allPromise).then(objectToPassIntoFunction => {
+            let flattenObjects = module.flattenPromiseObject(objectToPassIntoFunction);
+            let { notAllowedAttributes } = flattenObjects;
+            if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
+                mongo_connection.updateMany(filterCondition, { "$set": updatedata }, {
+                    multi: true,
+                    new: true
+                }).then(updatedData => {
+                    if (!_.isEmpty(updatedData)) {
+                        let passingDataForGetAll={
+                            data:{
+                                "filterCondition":filterCondition
+                            },
+                            "operationsContext":operationsContext,
+                            "locationOfModel":locationOfModel
+                        }
+                        module.findAll(passingDataForGetAll).then(findAllFetchedData => {
+                            return resolve(findAllFetchedData);
+                        });
+                    }
+                    else {
+                        console.log("no data updated");
+                    }
+                });
+            }
+            else {
+                console.log("I think someone try same data addition again.")
+                return resolve("I think someone try same data addition again.");
+            }
+        });
+    });
+}
 //#endregion
 
 //#region model finding and mongo connection 
