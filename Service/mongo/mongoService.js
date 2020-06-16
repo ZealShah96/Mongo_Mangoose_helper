@@ -10,11 +10,11 @@ let mongooseDefaultConnectionValues = {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         // useCreateIndex: true,
-        // useFindAndModify: false,
+         useFindAndModify: false,
         // autoIndex: false, // Don't build indexes
         // poolSize: 10, // Maintain up to 10 socket connections
         // serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-        // socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+        socketTimeoutMS: 10000, // Close sockets after 45 seconds of inactivity
         // family: 4
     }
 }
@@ -37,22 +37,28 @@ module.createNewEntry = (passeddata) => {
             let { notAllowedAttributes } = flattenObjects;
             if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
                 mongo_connection.create(flattenObjects.objectToPassIntoFunction).then(createdData => {
-                    let passingDataForGetAll={
-                        data:{
-                            "filterCondition":{}
+                    let passingDataForGetAll = {
+                        data: {
+                            "filterCondition": {}
                         },
-                        "operationsContext":operationsContext,
-                        "locationOfModel":locationOfModel
+                        "operationsContext": operationsContext,
+                        "locationOfModel": locationOfModel
                     }
                     module.findAll(passingDataForGetAll).then(findAllFetchedData => {
                         return resolve(findAllFetchedData);
+                    }).catch(e => {
+                        return reject(`error Occured:${e}`);
                     });
+                }).catch(e => {
+                    return reject(`error Occured:${e}`);
                 });
             }
             else {
                 console.log("I think someone try same data addition again.")
-                return resolve("I think someone try same data addition again.");
+                return resolve(`I think someone try to add this ${flattenObjects.objectToPassIntoFunction} again`);
             }
+        }).catch(e => {
+            return reject(`error Occured:${e}`);
         });
     });
 }
@@ -76,15 +82,18 @@ module.flattenPromiseObject = (array) => {
 
 module.fetchNotAllowedAttributes = (mongo_connection, operation) => {
     return new Promise((resolve, reject) => {
-       
+
         module.filterAttribute(mongo_connection.modelName, operation).then(filterAttributeFetchedData => {
-            let {skip,limit,notAllowedToTouch,requiredFields}=filterAttributeFetchedData;
+
+            let { skip, limit, notAllowedToTouch, requiredFields } = filterAttributeFetchedData;
             filterAttributeFetchedData.notAllowedToTouch.push("isNew");
             let notAllowedAttributes = _.reduce(notAllowedToTouch, function (obj, param) {
                 obj[param] = 0
                 return obj;
             }, {});
-            return resolve({ "notAllowedAttributes": notAllowedAttributes, "allowedAttributes": requiredFields,"defaultskip":skip,"defaultlimit":limit });
+            return resolve({ "notAllowedAttributes": notAllowedAttributes, "allowedAttributes": requiredFields, "defaultskip": skip, "defaultlimit": limit });
+        }).catch(e => {
+            return reject(`error Occured:${e}`);
         });
     });
 }
@@ -101,10 +110,12 @@ module.processOperationsContextAndPassAsPromise = (operationsContext, data) => {
                         passParentFunctionData) {
                     dataToPassInChildFunction["objectToPassIntoFunction"]["parentData"] = data;
                 }
-              
+
                 promiseArray.push(new Promise((resolve, reject) => {
                     module.mongoOperationExceution(dataToPassInChildFunction).then(objectToPassIntoFunction => {
                         resolve({ "objectToPassIntoFunction": objectToPassIntoFunction });
+                    }).catch(e => {
+                        return reject(`error Occured:${e}`);
                     });
                 })
                 )
@@ -125,7 +136,7 @@ module.findCount = (passeddata) => {
             var { locationOfModel, data, operationsContext } = passeddata;
             let { parentData, primaryKey, reAssigning,
                 passParentFunctionData } = data;
-            let filterCondition = {"isDeleted":false};
+            let filterCondition = { "isDeleted": false };
             if (_.isBoolean(passParentFunctionData) && passParentFunctionData) {
                 data = parentData;
             }
@@ -137,17 +148,18 @@ module.findCount = (passeddata) => {
             }
 
             let mongo_connection = require(path.resolve(locationOfModel)).model;
-            mongo_connection.count(filterCondition, (err, res) => {
+            mongo_connection.countDocuments(filterCondition, (err, res) => {
                 if (res > 0) {
                     return resolve(null);
                 }
                 return resolve(parentData);
             }).catch(e => {
                 console.log(e);
+                return reject(`error Occured:${e}`);
             });
         }
         catch (e) {
-            console.log(e);
+            return reject(`error Occured:${e}`);
         }
 
     });
@@ -168,64 +180,73 @@ module.mongoOperationExceution = (mongoOperation) => {
                     module[functioName](perameterToPassedInFunction).then(val => {
                         console.log(val);
                         resolve(val);
+                    }).catch(e => {
+                        return reject(`error Occured:${e}`);
                     });
                 }).catch(e => {
                     console.log(e);
+                    return reject(`error Occured:${e}`);
                 });
             }).catch(err => {
                 console.log(err);
+                return reject(`error Occured:${err}`);
             });
         }
         else {
             console.log("undefined error");
+            return reject(`undefined error`);
         }
     });
 }
 
-module.filterConditionFunction=(filterCondition,onlyIncludeDeleted)=>{
-    if(!_.isEmpty(filterCondition) && _.isBoolean(onlyIncludeDeleted) && onlyIncludeDeleted){
-        filterCondition["isDeleted"]=true;
+module.filterConditionFunction = (filterCondition, onlyIncludeDeleted) => {
+    if (!_.isEmpty(filterCondition) && _.isBoolean(onlyIncludeDeleted) && onlyIncludeDeleted) {
+        filterCondition["isDeleted"] = true;
     }
     return filterCondition;
 }
 
-module.makingFilterConditionProper=(data)=>{
-    let { parentData, filterCondition,onlyIncludeDeleted } = data;
-    data[filterCondition]=module.filterConditionFunction(filterCondition,onlyIncludeDeleted);
+module.makingFilterConditionProper = (data) => {
+    let { parentData, filterCondition, onlyIncludeDeleted } = data;
+    data[filterCondition] = module.filterConditionFunction(filterCondition, onlyIncludeDeleted);
     return data;
 }
 
 module.findAll = (passeddata) => {
     return new Promise((resolve, reject) => {
         var { locationOfModel, data, operationsContext } = passeddata;
-        let { parentData, filterCondition,skip,limit } = data;
+        let { parentData, filterCondition, skip, limit } = data;
         let mongo_connection = require(path.resolve(locationOfModel)).model;
         let allPromise = module.processOperationsContextAndPassAsPromise(operationsContext, data);
         allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "show"));
         Promise.all(allPromise).then(objectToPassIntoFunction => {
             let flattenObjects = module.flattenPromiseObject(objectToPassIntoFunction);
-            let { notAllowedAttributes, allowedAttributes,dafultskip,defaultlimit } = flattenObjects;
-            if(!(skip>0 || limit>0)){
-                skip=dafultskip,
-                limit=defaultlimit
+            let { notAllowedAttributes, allowedAttributes, dafultskip, defaultlimit } = flattenObjects;
+            if (!(skip > 0 || limit > 0)) {
+                skip = dafultskip,
+                    limit = defaultlimit
             }
             if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
-                mongo_connection.find(filterCondition, notAllowedAttributes,{"skip":skip,"limit":limit}).then((findFilterFetchedData) => {
+                mongo_connection.find(filterCondition, notAllowedAttributes, { "skip": skip, "limit": limit }).then((findFilterFetchedData) => {
                     console.log(findFilterFetchedData);
-                    let filteredData =[];
-                     findFilterFetchedData.filter(x => {
+                    let filteredData = [];
+                    findFilterFetchedData.filter(x => {
                         let y = _.omitBy(x, _.isUndefined);
                         y = _.pick(y, allowedAttributes);
                         filteredData.push(y);
                     });
                     return resolve(filteredData);
+                }).catch(e => {
+                    return reject(`error Occured:${e}`);
                 });
             }
             else {
                 console.log("I think there are some issues in to find all function.");
-                return resolve("I think there are some issues in to find all function.");
+                return reject("I think there are some issues in to find all function.");
             }
-        });
+        }).catch(e => {
+            return reject(`error Occured:${e}`);
+        });;
     });
 }
 
@@ -236,12 +257,20 @@ module.filterAttribute = (modelName, operation) => {
             if (err) {
                 console.log(err);
             }
+            else if(res==null){
+                configPerameterfetch("defaultAllowedOperationContext").then(res=>{
+                    return resolve(res[operation]);
+                }).catch(e=>{
+
+                });
+            }
             else {
                 let filterdata = res.allowedOperationsContext[operation];
-
                 return resolve(filterdata);
             }
-        });
+        }).catch(e => {
+            return reject(`error Occured:${e}`);
+        });;
     });
 }
 
@@ -259,25 +288,29 @@ module.updateOne = (passeddata) => {
                     new: true
                 }).then(updatedData => {
                     if (!_.isEmpty(updatedData)) {
-                        let passingDataForGetAll={
-                            data:{
-                                "filterCondition":filterCondition
+                        let passingDataForGetAll = {
+                            data: {
+                                "filterCondition": filterCondition
                             },
-                            "operationsContext":operationsContext,
-                            "locationOfModel":locationOfModel
+                            "operationsContext": operationsContext,
+                            "locationOfModel": locationOfModel
                         }
                         module.findAll(passingDataForGetAll).then(findAllFetchedData => {
                             return resolve(findAllFetchedData);
+                        }).catch(e => {
+                            return reject(`error Occured:${e}`);
                         });
                     }
                     else {
                         console.log("no data updated");
                     }
+                }).catch(e => {
+                    return reject(`error Occured:${e}`);
                 });
             }
             else {
                 console.log("I think someone try same data addition again.")
-                return resolve("I think someone try same data addition again.");
+                return reject("I think someone try same data addition again.");
             }
         });
     });
@@ -286,7 +319,7 @@ module.updateOne = (passeddata) => {
 module.updateAll = (passeddata) => {
     return new Promise((resolve, reject) => {
         var { locationOfModel, data, operationsContext } = passeddata;
-        let { parentData, updatedata, filterCondition,onlyIncludeDeleted } = data;
+        let { parentData, updatedata, filterCondition, onlyIncludeDeleted } = data;
         let mongo_connection = require(path.resolve(locationOfModel)).model;
         let allPromise = module.processOperationsContextAndPassAsPromise(operationsContext, module.getTempModeldata(locationOfModel, data));
         allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "update"));
@@ -298,34 +331,39 @@ module.updateAll = (passeddata) => {
                     multi: true,
                     new: true
                 }).then(updatedData => {
-                    if (updatedData.nModified>0) {
-                        let passingDataForGetAll={
-                            data:{
-                                "filterCondition":module.filterConditionFunction(filterCondition,onlyIncludeDeleted)
+                    if (updatedData.nModified > 0) {
+                        let passingDataForGetAll = {
+                            data: {
+                                "filterCondition": module.filterConditionFunction(filterCondition, onlyIncludeDeleted)
                             },
-                            "operationsContext":operationsContext,
-                            "locationOfModel":locationOfModel
+                            "operationsContext": operationsContext,
+                            "locationOfModel": locationOfModel
                         }
                         module.findAll(passingDataForGetAll).then(findAllFetchedData => {
                             return resolve(findAllFetchedData);
-                        }).catch(e=>{
+                        }).catch(e => {
                             console.log(e);
+                            return reject(`error Occured:${e}`);
                         });
                     }
                     else {
                         console.log("no data updated");
+                        return resolve("no data updated");
                     }
+                }).catch(e => {
+                    console.log(e);
+                    return reject(`error Occured:${e}`);
                 });
             }
             else {
                 console.log("I think someone try same data addition again.")
-                return resolve("I think someone try same data addition again.");
+                return reject("I think someone try same data addition again.");
             }
         });
     });
 }
 
-module.deleteOne=(passeddata)=>{
+module.deleteOne = (passeddata) => {
     return new Promise((resolve, reject) => {
         var { locationOfModel, data, operationsContext } = passeddata;
         let { parentData, updatedata, filterCondition } = module.makingFilterConditionProper(data);
@@ -335,41 +373,47 @@ module.deleteOne=(passeddata)=>{
         Promise.all(allPromise).then(objectToPassIntoFunction => {
             let flattenObjects = module.flattenPromiseObject(objectToPassIntoFunction);
             if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
-                let passingDataForUpdateAll={
-                    data:{
-                        "filterCondition":filterCondition,
-                        "updatedata":{"isDeleted":true},
-                        "onlyIncludeDeleted":true
+                let passingDataForUpdateAll = {
+                    data: {
+                        "filterCondition": filterCondition,
+                        "updatedata": { "isDeleted": true },
+                        "onlyIncludeDeleted": true
                     },
-                    "operationsContext":operationsContext,
-                    "locationOfModel":locationOfModel
+                    "operationsContext": operationsContext,
+                    "locationOfModel": locationOfModel
                 }
                 module.updateAll(passingDataForUpdateAll).then(updatedData => {
                     if (!_.isEmpty(updatedData)) {
-                        let passingDataForGetAll={
-                            data:{
-                                "filterCondition":filterCondition
+                        let passingDataForGetAll = {
+                            data: {
+                                "filterCondition": filterCondition
                             },
-                            "operationsContext":operationsContext,
-                            "locationOfModel":locationOfModel
+                            "operationsContext": operationsContext,
+                            "locationOfModel": locationOfModel
                         }
                         module.findAll(passingDataForGetAll).then(findAllFetchedData => {
                             return resolve(findAllFetchedData);
+                        }).catch(e => {
+                            console.log(e);
+                            return reject(`error Occured:${e}`);
                         });
                     }
                     else {
                         console.log("no data updated");
+                        return resolve("no data updated");
                     }
-                }).catch(e=>{
+                }).catch(e => {
                     console.log(e);
+                    return reject(`error Occured:${e}`);
                 });
             }
             else {
                 console.log("I think someone try same data addition again.")
-                return resolve("I think someone try same data addition again.");
+                return reject("I think someone try same data addition again.");
             }
-        }).catch(e=>{
+        }).catch(e => {
             console.log(e);
+            return reject(`error Occured:${e}`);
         });
     });
 }
@@ -387,9 +431,9 @@ module.deleteOne=(passeddata)=>{
 exports.mongoDbConnectionCreate = async (mongoOptions) => {
     return new Promise((resolve, reject) => {
         try {
-            let { uri, port, dbname, options } = _.merge(mongooseDefaultConnectionValues, mongoOptions)
+            let { uri, port, dbname, username,password,options } = _.merge(mongooseDefaultConnectionValues, mongoOptions)
             debug("In mongo Db Connection Create function !!!!");
-            let urlForDB = `mongodb://${uri}:${port}/${dbname}`;
+            let urlForDB = `mongodb+srv://${username}:${password}@${uri}/${dbname}`;
             debug(`Trying to connect to Mongo db on:- ${urlForDB}`)
             mongoConnection[mongoConnectionIndex] = mongoose.connect(`${urlForDB}`, options).then(con => {
                 debug("Mongo db is connected.");
@@ -414,8 +458,6 @@ exports.mongoDbConnectionCreate = async (mongoOptions) => {
 exports.mongoDbConnectionClose = async () => {
 
 }
-
-
 //#region removing whole db 
 /**
  * @description it will remove whole db from database.
