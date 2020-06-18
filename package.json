@@ -7,7 +7,7 @@
     "express": "^4.16.4",
     "guid": "0.0.12",
     "lodash": "^4.17.15",
-    "mongoose": "^5.4.1",
+    "mongoose": "^5.9.19",
     "mongoose-auto-increment": "^5.0.1"
   },
   "devDependencies": {
