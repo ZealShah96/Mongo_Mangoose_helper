@@ -37,14 +37,14 @@ module.createNewEntry = (passeddata) => {
             let { notAllowedAttributes } = flattenObjects;
             if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
                 mongo_connection.create(flattenObjects.objectToPassIntoFunction).then(createdData => {
-                    let passingDataForGetAll = {
+                    let passingDataForGetAllAfterNewEntryCreation = {
                         data: {
-                            "filterCondition": {}
+                            "filterCondition": {date:createdData.date}
                         },
                         "operationsContext": operationsContext,
                         "locationOfModel": locationOfModel
                     }
-                    module.findAll(passingDataForGetAll).then(findAllFetchedData => {
+                    module.findAll(passingDataForGetAllAfterNewEntryCreation).then(findAllFetchedData => {
                         return resolve(findAllFetchedData);
                     }).catch(e => {
                         return reject(`error Occured:${e}`);
@@ -113,7 +113,7 @@ module.processOperationsContextAndPassAsPromise = (operationsContext, data) => {
 
                 promiseArray.push(new Promise((resolve, reject) => {
                     module.mongoOperationExceution(dataToPassInChildFunction).then(objectToPassIntoFunction => {
-                        resolve({ "objectToPassIntoFunction": objectToPassIntoFunction });
+                        resolve({ "objectToPassIntoFunction": objectToPassIntoFunction.val });
                     }).catch(e => {
                         return reject(`error Occured:${e}`);
                     });
@@ -179,9 +179,9 @@ module.mongoOperationExceution = (mongoOperation) => {
                     perameterToPassedInFunction["operationsContext"] = operationsContext;
                     module[functioName](perameterToPassedInFunction).then(val => {
                         console.log(val);
-                        resolve(val);
+                        resolve({"functionName":functioName,"val":val});
                     }).catch(e => {
-                        return reject(`error Occured:${e}`);
+                        return reject(`${functioName} error Occured:${e}`);
                     });
                 }).catch(e => {
                     console.log(e);
@@ -221,21 +221,27 @@ module.findAll = (passeddata) => {
         allPromise.push(module.fetchNotAllowedAttributes(mongo_connection, "show"));
         Promise.all(allPromise).then(objectToPassIntoFunction => {
             let flattenObjects = module.flattenPromiseObject(objectToPassIntoFunction);
-            let { notAllowedAttributes, allowedAttributes, dafultskip, defaultlimit } = flattenObjects;
+            let { notAllowedAttributes, allowedAttributes, defaultskip, defaultlimit } = flattenObjects;
             if (!(skip > 0 || limit > 0)) {
-                skip = dafultskip,
+                skip = defaultskip,
                     limit = defaultlimit
             }
             if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
                 mongo_connection.find(filterCondition, notAllowedAttributes, { "skip": skip, "limit": limit }).then((findFilterFetchedData) => {
                     console.log(findFilterFetchedData);
                     let filteredData = [];
-                    findFilterFetchedData.filter(x => {
-                        let y = _.omitBy(x, _.isUndefined);
-                        y = _.pick(y, allowedAttributes);
-                        filteredData.push(y);
-                    });
-                    return resolve(filteredData);
+                    if(!_.isEmpty(allowedAttributes)){
+                        findFilterFetchedData.filter(x => {
+                            let y = _.omitBy(x, _.isUndefined);
+                            y = _.pick(y, allowedAttributes);
+                            filteredData.push(y);
+                        });
+                        return resolve(filteredData);
+                    }
+                    else{
+                        return resolve(findFilterFetchedData);
+                    }
+                   
                 }).catch(e => {
                     return reject(`error Occured:${e}`);
                 });
@@ -261,7 +267,7 @@ module.filterAttribute = (modelName, operation) => {
                 configPerameterfetch("defaultAllowedOperationContext").then(res=>{
                     return resolve(res[operation]);
                 }).catch(e=>{
-
+                    return reject("error in finding allowed Operation")
                 });
             }
             else {
@@ -303,6 +309,7 @@ module.updateOne = (passeddata) => {
                     }
                     else {
                         console.log("no data updated");
+                        return resolve("no data updated");
                     }
                 }).catch(e => {
                     return reject(`error Occured:${e}`);
@@ -332,6 +339,7 @@ module.updateAll = (passeddata) => {
                     new: true
                 }).then(updatedData => {
                     if (updatedData.nModified > 0) {
+                        filterCondition=updatedata;
                         let passingDataForGetAll = {
                             data: {
                                 "filterCondition": module.filterConditionFunction(filterCondition, onlyIncludeDeleted)
@@ -339,6 +347,7 @@ module.updateAll = (passeddata) => {
                             "operationsContext": operationsContext,
                             "locationOfModel": locationOfModel
                         }
+                        
                         module.findAll(passingDataForGetAll).then(findAllFetchedData => {
                             return resolve(findAllFetchedData);
                         }).catch(e => {
@@ -360,6 +369,13 @@ module.updateAll = (passeddata) => {
                 return reject("I think someone try same data addition again.");
             }
         });
+    });
+}
+
+module.creatingFilterConditionBasedOnUpdatedData=(updatedData)=>{
+    let filterCondition={};
+    Object.keys(updateData).forEach((value, index, array) => {
+
     });
 }
 
