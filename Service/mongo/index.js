@@ -2,7 +2,7 @@
 /**Intialization of most common used package. */
 let fs = require('fs');
 let path = require('path');
-let mongoService = require(path.resolve('./Service/mongo/mongoService'));
+let mongoService = require('./mongoService');
 let guid = require('guid');
 
 /**Mongo Connection Model */
@@ -10,7 +10,7 @@ let guid = require('guid');
 let PromiseArray = [];
 let listOfPassingData = [];
 /**Intialization of database table file folder. */
-let configPerameterfetch = require(path.resolve('./service/config')).findConfigPerameter;
+let configPerameterfetch = require('../config').module.findConfigPerameter;
 configPerameterfetch("models").then((value) => {
     value.forEach((passeddataElement, index, array) => {
         let passeddata = {};

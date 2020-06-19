@@ -18,4 +18,4 @@ module.findConfigPerameter = (perameterName) => {
     });
 }
 
-module.exports = module;
+exports.module = module;

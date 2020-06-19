@@ -2,7 +2,7 @@ const path = require('path');
 var mongoose = require('mongoose');
 let mongoService = require('./mongoService');
 const debug = require('../debug/debugService').debugConsole(__dirname, __filename);
-let configPerameterfetch = require(path.resolve('./service/config')).findConfigPerameter;
+let configPerameterfetch = require('../config/index').module.findConfigPerameter;
 let mongoConnection = [];
 let mongooseDefaultConnectionValues = {
     port: 4000,

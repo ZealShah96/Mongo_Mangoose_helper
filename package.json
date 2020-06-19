@@ -1,6 +1,6 @@
 {
-  "name": "Mongo_Operations",
-  "version": "1.0.0",
+  "name": "mongo-operations-wrapper",
+  "version": "3.0.1",
   "main": "index.js",
   "dependencies": {
     "bluebird": "^3.5.3",
