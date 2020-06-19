@@ -1,5 +1,6 @@
 
 exports.configService = require('./Service/config/config');
+exports.config = require('./Service/config');
 exports.debugService = require('./Service/debug/debugService');
 exports.utilityService = require('./Service/utility/utilityService');
 exports.serverService = require('./Service/server/serverService');
