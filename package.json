@@ -49,7 +49,7 @@
     "mongo": "node ./Service/mongo/index.js",
     "start": "npm run mongo",
     "test": "mocha ./test/*.js",
-    "deploy":"git add . && git commit -m \"commit changes\" && git push origin finalVersion && npm verison patch && npm publish"
+    "deploy": "git add . && git commit -m \"commit changes\" && git push origin finalVersion && npm verison patch && npm publish"
   },
-  "version": "3.0.15"
+  "version": "3.0.16"
 }
