@@ -1,0 +1,9 @@
+{
+    "dev":"/../config/env.json",
+    "dev_rest_api":"dev_config.json",
+    "dev_test_api":"dev_config_test.json",
+    "dev_to_do_list_test":"/../config/dev_config_to_do.json",
+    "prod":"",
+    "staging":""
+    
+}

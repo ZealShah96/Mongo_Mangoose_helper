@@ -1,0 +1,54 @@
+{
+  "_from": "mongo-operations-wrapper@^3.0.9",
+  "_id": "mongo-operations-wrapper@3.0.9",
+  "_inBundle": false,
+  "_integrity": "sha512-fpE/lRKgMKGID2sWnzMyiW2M8zq9YBY2emPpSaxZa2ABYPBCDHwfyn8vJq+ztarWNKXcAXDxJlORI2khskGgxA==",
+  "_location": "/mongo-operations-wrapper",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "mongo-operations-wrapper@^3.0.9",
+    "name": "mongo-operations-wrapper",
+    "escapedName": "mongo-operations-wrapper",
+    "rawSpec": "^3.0.9",
+    "saveSpec": null,
+    "fetchSpec": "^3.0.9"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/mongo-operations-wrapper/-/mongo-operations-wrapper-3.0.9.tgz",
+  "_shasum": "93504111a26bea2ff65b99dd21c894d426afbdfe",
+  "_spec": "mongo-operations-wrapper@^3.0.9",
+  "_where": "Z:\\My Expriements\\express",
+  "author": "",
+  "bundleDependencies": false,
+  "dependencies": {
+    "bluebird": "^3.5.3",
+    "express": "^4.16.4",
+    "guid": "0.0.12",
+    "lodash": "^4.17.15",
+    "mongoose": "^5.9.19",
+    "mongoose-auto-increment": "^5.0.1"
+  },
+  "deprecated": false,
+  "description": "",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "supertest": "^3.3.0"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "mongo-operations-wrapper",
+  "scripts": {
+    "debug": "NODE_ENV=dev_rest_api DEBUG='*Service' node --nolazy --inspect-brk=9229 checkService.js",
+    "debug_DebugService": "DEBUG=* node --nolazy --inspect-brk=9229 ./Service/debug/debugService.js",
+    "mongo": "node ./Service/mongo/index.js",
+    "start": "npm run mongo",
+    "test": "mocha ./test/*.js"
+  },
+  "version": "3.0.15"
+}
