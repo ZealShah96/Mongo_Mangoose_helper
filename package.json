@@ -48,7 +48,8 @@
     "debug_DebugService": "DEBUG=* node --nolazy --inspect-brk=9229 ./Service/debug/debugService.js",
     "mongo": "node ./Service/mongo/index.js",
     "start": "npm run mongo",
-    "test": "mocha ./test/*.js"
+    "test": "mocha ./test/*.js",
+    "deploy":"git add . && git commit -m \"commit changes\" && git push origin finalVersion && npm verison patch && npm publish"
   },
   "version": "3.0.15"
 }
