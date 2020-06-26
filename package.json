@@ -50,6 +50,7 @@
     "start": "npm run mongo",
     "test": "mocha ./test/*.js",
     "deploy": "git add . && git commit -m \"commit changes\" && git push origin finalVersion && npm verison patch && npm publish",
+    "soft-deploy":"git add . && git commit -m \"commit changes\" && git push origin finalVersion",
     "update":"git checkout finalVersion && git pull origin finalVersion"
   },
   "version": "3.0.16"
