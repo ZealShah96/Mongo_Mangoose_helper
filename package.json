@@ -54,5 +54,5 @@
     "soft-deploy": "git add . && git commit -m \"commit changes\" && git push origin finalVersion",
     "update": "git checkout finalVersion && git pull origin finalVersion"
   },
-  "version": "3.0.17"
+  "version": "3.0.18"
 }
