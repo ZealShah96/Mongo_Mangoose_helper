@@ -1,0 +1,635 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "express Framework",
+    "contact": {}
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/findAll/user": {
+      "post": {
+        "summary": "findAll",
+        "tags": [
+          "user"
+        ],
+        "operationId": "findAll",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/findAllRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/create/user": {
+      "post": {
+        "summary": "create request",
+        "tags": [
+          "user"
+        ],
+        "operationId": "createrequest",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/createrequestrequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/put/user": {
+      "post": {
+        "summary": "update",
+        "tags": [
+          "user"
+        ],
+        "operationId": "update",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/updaterequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/putAll/user": {
+      "post": {
+        "summary": "putAll",
+        "tags": [
+          "user"
+        ],
+        "operationId": "putAll",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/putAllRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/deleteAll/user": {
+      "post": {
+        "summary": "deleteAll",
+        "tags": [
+          "user"
+        ],
+        "operationId": "deleteAll",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/deleteAllRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/create/table": {
+      "post": {
+        "summary": "create request",
+        "tags": [
+          "table"
+        ],
+        "operationId": "Postcreaterequest",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/createrequestrequest1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/findAll/table": {
+      "post": {
+        "summary": "findall table",
+        "tags": [
+          "table"
+        ],
+        "operationId": "findalltable",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/findalltablerequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/getAuthenticationToken": {
+      "post": {
+        "summary": "get authToken",
+        "tags": [
+          "authentication"
+        ],
+        "operationId": "getauthToken",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/getauthTokenRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "findAllRequest": {
+      "title": "findAllRequest",
+      "example": {
+        "data": {
+          "filterCondition": {}
+        },
+        "auth": {
+          "username": "zealsshah12",
+          "authToken": "bd6b638b-1b40-be71-ecac-c5ebb3b3ba34"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/Data"
+        },
+        "auth": {
+          "$ref": "#/definitions/Auth"
+        }
+      },
+      "required": [
+        "data",
+        "auth"
+      ]
+    },
+    "Data": {
+      "title": "Data",
+      "example": {
+        "filterCondition": {}
+      },
+      "type": "object",
+      "properties": {
+        "filterCondition": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "filterCondition"
+      ]
+    },
+    "Auth": {
+      "title": "Auth",
+      "example": {
+        "username": "zealsshah12",
+        "authToken": "bd6b638b-1b40-be71-ecac-c5ebb3b3ba34"
+      },
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "authToken": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "username",
+        "authToken"
+      ]
+    },
+    "createrequestrequest": {
+      "title": "createrequestrequest",
+      "example": {
+        "data": {
+          "username": "zealsshah1231123"
+        },
+        "auth": {
+          "username": "zealsshah12",
+          "authToken": "bd6b638b-1b40-be71-ecac-c5ebb3b3ba34"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/Data1"
+        },
+        "auth": {
+          "$ref": "#/definitions/Auth"
+        }
+      },
+      "required": [
+        "data",
+        "auth"
+      ]
+    },
+    "Data1": {
+      "title": "Data1",
+      "example": {
+        "username": "zealsshah1231123"
+      },
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "username"
+      ]
+    },
+    "updaterequest": {
+      "title": "updaterequest",
+      "example": {
+        "data": {
+          "filterCondition": {
+            "password": "P@ssword123"
+          },
+          "updatedata": {
+            "password": "P@ssword1231"
+          }
+        },
+        "auth": {
+          "username": "zealsshah12",
+          "authToken": "bd6b638b-1b40-be71-ecac-c5ebb3b3ba34"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/Data2"
+        },
+        "auth": {
+          "$ref": "#/definitions/Auth"
+        }
+      },
+      "required": [
+        "data",
+        "auth"
+      ]
+    },
+    "Data2": {
+      "title": "Data2",
+      "example": {
+        "filterCondition": {
+          "password": "P@ssword123"
+        },
+        "updatedata": {
+          "password": "P@ssword1231"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "filterCondition": {
+          "$ref": "#/definitions/FilterCondition"
+        },
+        "updatedata": {
+          "$ref": "#/definitions/Updatedata"
+        }
+      },
+      "required": [
+        "filterCondition",
+        "updatedata"
+      ]
+    },
+    "FilterCondition": {
+      "title": "FilterCondition",
+      "example": {
+        "password": "P@ssword123"
+      },
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "password"
+      ]
+    },
+    "Updatedata": {
+      "title": "Updatedata",
+      "example": {
+        "password": "P@ssword1231"
+      },
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "password"
+      ]
+    },
+    "putAllRequest": {
+      "title": "putAllRequest",
+      "example": {
+        "data": {
+          "filterCondition": {
+            "password": "P@ssword1231"
+          },
+          "updatedata": {
+            "password": "P@ssword122"
+          }
+        },
+        "auth": {
+          "username": "zealsshah12",
+          "authToken": "bd6b638b-1b40-be71-ecac-c5ebb3b3ba34"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/Data2"
+        },
+        "auth": {
+          "$ref": "#/definitions/Auth"
+        }
+      },
+      "required": [
+        "data",
+        "auth"
+      ]
+    },
+    "deleteAllRequest": {
+      "title": "deleteAllRequest",
+      "example": {
+        "data": {
+          "filterCondition": {
+            "password": "P@ssword122"
+          }
+        },
+        "auth": {
+          "username": "zealsshah12",
+          "authToken": "bd6b638b-1b40-be71-ecac-c5ebb3b3ba34"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/Data4"
+        },
+        "auth": {
+          "$ref": "#/definitions/Auth"
+        }
+      },
+      "required": [
+        "data",
+        "auth"
+      ]
+    },
+    "Data4": {
+      "title": "Data4",
+      "example": {
+        "filterCondition": {
+          "password": "P@ssword122"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "filterCondition": {
+          "$ref": "#/definitions/FilterCondition"
+        }
+      },
+      "required": [
+        "filterCondition"
+      ]
+    },
+    "createrequestrequest1": {
+      "title": "createrequestrequest1",
+      "example": {
+        "data": {
+          "name": "authentication"
+        },
+        "auth": {
+          "username": "zealsshah12",
+          "authToken": "bd6b638b-1b40-be71-ecac-c5ebb3b3ba34"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/Data5"
+        },
+        "auth": {
+          "$ref": "#/definitions/Auth"
+        }
+      },
+      "required": [
+        "data",
+        "auth"
+      ]
+    },
+    "Data5": {
+      "title": "Data5",
+      "example": {
+        "name": "authentication"
+      },
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "findalltablerequest": {
+      "title": "findalltablerequest",
+      "example": {
+        "data": {
+          "filterCondition": {}
+        },
+        "auth": {
+          "username": "zealsshah12",
+          "authToken": "bd6b638b-1b40-be71-ecac-c5ebb3b3ba34"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/Data"
+        },
+        "auth": {
+          "$ref": "#/definitions/Auth"
+        }
+      },
+      "required": [
+        "data",
+        "auth"
+      ]
+    },
+    "getauthTokenRequest": {
+      "title": "getauthTokenRequest",
+      "example": {
+        "data": {
+          "username": "zealsshah1231123",
+          "password": "P@ssword123"
+        }
+      },
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/Data7"
+        }
+      },
+      "required": [
+        "data"
+      ]
+    },
+    "Data7": {
+      "title": "Data7",
+      "example": {
+        "username": "zealsshah1231123",
+        "password": "P@ssword123"
+      },
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "username",
+        "password"
+      ]
+    }
+  },
+  "tags": [
+    {
+      "name": "user"
+    },
+    {
+      "name": "table"
+    },
+    {
+      "name": "authentication"
+    }
+  ]
+}

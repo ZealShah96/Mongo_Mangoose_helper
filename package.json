@@ -28,6 +28,7 @@
     "bluebird": "^3.5.3",
     "express": "^4.16.4",
     "guid": "0.0.12",
+    "it-each": "^0.4.0",
     "lodash": "^4.17.15",
     "mongoose": "^5.9.19",
     "mongoose-auto-increment": "^5.0.1"
@@ -48,10 +49,10 @@
     "debug_DebugService": "DEBUG=* node --nolazy --inspect-brk=9229 ./Service/debug/debugService.js",
     "mongo": "node ./Service/mongo/index.js",
     "start": "npm run mongo",
-    "test": "mocha ./test/*.js",
+    "test": " mocha.cmd ./test/mongo.js dev_config_test.json",
     "deploy": "git add . && git commit -m \"commit changes\" && git push origin finalVersion && npm verison patch && npm publish",
-    "soft-deploy":"git add . && git commit -m \"commit changes\" && git push origin finalVersion",
-    "update":"git checkout finalVersion && git pull origin finalVersion"
+    "soft-deploy": "git add . && git commit -m \"commit changes\" && git push origin finalVersion",
+    "update": "git checkout finalVersion && git pull origin finalVersion"
   },
   "version": "3.0.16"
 }

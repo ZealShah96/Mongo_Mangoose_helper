@@ -1,0 +1,578 @@
+{
+    "port": 4000,
+    "url": "localhost",
+    "models_locations": "./models/",
+    "mongo_connection": {
+        "uri": "cluster0.munlx.mongodb.net",
+        "port": "27017",
+        "password": "Password123",
+        "username": "zealshah",
+        "dbname": "Test"
+    },
+    "config_file_location": "./service/config",
+    "defaultAllowedOperationContext": {
+        "primaryKey": "username",
+        "create": {
+            "skip": 0,
+            "limit": 6,
+            "virtualHeaders": "",
+            "fields": [],
+            "requiredFields": [
+                "id"
+            ],
+            "notAllowedToTouch": []
+        },
+        "update": {
+            "skip": 0,
+            "limit": 6,
+            "virtualHeaders": "",
+            "fields": [],
+            "requiredFields": [
+                "id"
+            ],
+            "notAllowedToTouch": []
+        },
+        "delete": {
+            "skip": 0,
+            "limit": 6,
+            "virtualHeaders": "",
+            "fields": [
+                "id"
+            ],
+            "requiredFields": [],
+            "notAllowedToTouch": []
+        },
+        "show": {
+            "skip": 0,
+            "limit": 6,
+            "virtualHeaders": "",
+            "fields": [],
+            "requiredFields": [
+                "id"
+            ],
+            "notAllowedToTouch": []
+        }
+    },
+    "models": [
+        {
+            "name": "table",
+            "model_location": "./model/table",
+            "primaryKey": "name",
+            "notAllowedPerameters": [],
+            "allowedOperationsContext": {
+                "primaryKey": "username",
+                "create": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [
+                        "id"
+                    ],
+                    "notAllowedToTouch": []
+                },
+                "update": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [
+                        "id"
+                    ],
+                    "notAllowedToTouch": []
+                },
+                "delete": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [
+                        "id"
+                    ],
+                    "requiredFields": [
+                        "id"
+                    ],
+                    "notAllowedToTouch": []
+                },
+                "show": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [
+                        "id"
+                    ],
+                    "notAllowedToTouch": []
+                }
+            }
+        },
+        {
+            "name": "user",
+            "model_location": "./model/user",
+            "notAllowedPerameters": [],
+            "primaryKey": "userName",
+            "allowedOperationsContext": {
+                "create": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [
+                        "id"
+                    ],
+                    "notAllowedToTouch": []
+                },
+                "update": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [
+                        "id"
+                    ],
+                    "notAllowedToTouch": []
+                },
+                "delete": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [
+                        "id"
+                    ],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "show": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [
+                        "id"
+                    ],
+                    "notAllowedToTouch": []
+                }
+            }
+        },
+        {
+            "name": "socialLink",
+            "model_location": "./model/socialLink",
+            "primaryKey": "name",
+            "notAllowedPerameters": [],
+            "allowedOperationsContext": {
+                "create": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "update": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "delete": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [
+                        "id"
+                    ],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                },
+                "show": {
+                    "skip": 0,
+                    "limit": 6,
+                    "virtualHeaders": "",
+                    "fields": [],
+                    "requiredFields": [],
+                    "notAllowedToTouch": []
+                }
+            }
+        }
+    ],
+    "tests": [
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/table",
+            "objectToPassIntoFunction": {
+                "name": "table",
+                "model_location": "./model/table",
+                "primaryKey": "name",
+                "notAllowedPerameters": [],
+                "allowedOperationsContext": {
+                    "primaryKey": "username",
+                    "create": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    },
+                    "update": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    },
+                    "delete": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [
+                            "id"
+                        ],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    },
+                    "show": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    }
+                }
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/table",
+                    "objectToPassIntoFunction": {
+                        "primaryKey": "name",
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            }
+        },
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/table",
+            "objectToPassIntoFunction": {
+                "name": "user",
+                "model_location": "./model/user",
+                "notAllowedPerameters": [],
+                "primaryKey": "userName",
+                "allowedOperationsContext": {
+                    "create": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    },
+                    "update": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    },
+                    "delete": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [
+                            "id"
+                        ],
+                        "requiredFields": [],
+                        "notAllowedToTouch": []
+                    },
+                    "show": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    }
+                }
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/table",
+                    "objectToPassIntoFunction": {
+                        "primaryKey": "name",
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": false
+        },
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/table",
+            "objectToPassIntoFunction": {
+                "name": "socialLink",
+                "model_location": "./model/socialLink",
+                "primaryKey": "name",
+                "notAllowedPerameters": [],
+                "allowedOperationsContext": {
+                    "create": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [],
+                        "notAllowedToTouch": []
+                    },
+                    "update": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [],
+                        "notAllowedToTouch": []
+                    },
+                    "delete": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [
+                            "id"
+                        ],
+                        "requiredFields": [],
+                        "notAllowedToTouch": []
+                    },
+                    "show": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [],
+                        "notAllowedToTouch": []
+                    }
+                }
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/table",
+                    "objectToPassIntoFunction": {
+                        "primaryKey": "name",
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": false
+        },
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/table",
+            "objectToPassIntoFunction": {
+                "name": "socialLink",
+                "model_location": "./model/socialLink",
+                "primaryKey": "name",
+                "notAllowedPerameters": [],
+                "allowedOperationsContext": {
+                    "create": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [],
+                        "notAllowedToTouch": []
+                    },
+                    "update": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [],
+                        "notAllowedToTouch": []
+                    },
+                    "delete": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [
+                            "id"
+                        ],
+                        "requiredFields": [],
+                        "notAllowedToTouch": []
+                    },
+                    "show": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [],
+                        "notAllowedToTouch": []
+                    }
+                }
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/table",
+                    "objectToPassIntoFunction": {
+                        "primaryKey": "name",
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": true
+        },
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/table",
+            "objectToPassIntoFunction": {
+                "name": "user",
+                "model_location": "./model/user",
+                "notAllowedPerameters": [],
+                "primaryKey": "userName",
+                "allowedOperationsContext": {
+                    "create": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    },
+                    "update": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    },
+                    "delete": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [
+                            "id"
+                        ],
+                        "requiredFields": [],
+                        "notAllowedToTouch": []
+                    },
+                    "show": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    }
+                }
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/table",
+                    "objectToPassIntoFunction": {
+                        "primaryKey": "name",
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": true
+        },
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/table",
+            "objectToPassIntoFunction": {
+                "name": "table",
+                "model_location": "./model/table",
+                "primaryKey": "name",
+                "notAllowedPerameters": [],
+                "allowedOperationsContext": {
+                    "primaryKey": "username",
+                    "create": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    },
+                    "update": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    },
+                    "delete": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [
+                            "id"
+                        ],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    },
+                    "show": {
+                        "skip": 0,
+                        "limit": 6,
+                        "virtualHeaders": "",
+                        "fields": [],
+                        "requiredFields": [
+                            "id"
+                        ],
+                        "notAllowedToTouch": []
+                    }
+                }
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/table",
+                    "objectToPassIntoFunction": {
+                        "primaryKey": "name",
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": true
+        }
+    ]
+}
