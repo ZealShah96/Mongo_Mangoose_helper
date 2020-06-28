@@ -50,7 +50,7 @@
     "mongo": "node ./Service/mongo/index.js",
     "start": "npm run mongo",
     "test": " mocha.cmd ./test/mongo.js dev_config_test.json --exit",
-    "deploy": "git add . && git commit -m \"commit changes\" && git push origin finalVersion && npm verison patch && npm publish",
+    "deploy": "npm test && git add . && git commit -m \"commit changes\" && git push origin finalVersion && npm verison patch && npm publish",
     "soft-deploy": "npm test && git add . && git commit -m \"commit changes\" && git push origin finalVersion",
     "update": "git checkout finalVersion && git pull origin finalVersion"
   },
