@@ -22,6 +22,14 @@ describe('Testing Mongo Service', function () {
         return new Promise(async (resolve, reject) => {
             let listofPassingData = await configPerameterfetch("tests");
             //  expect(value).equal(1);
+            listofPassingData=listofPassingData.filter(element=>{
+                if(_.isBoolean(element.Shouldtest) && element.Shouldtest){
+                    return element;
+                }
+                else if(!_.isBoolean(element.Shouldtest)){
+                    return element;
+                }
+            })
             if(_.isUndefined(listofPassingData)){
                 console.log("    Test cases are not avaiable.");
                 expect(_.isUndefined(listofPassingData)).equal(true);
@@ -37,15 +45,15 @@ describe('Testing Mongo Service', function () {
                 resolve();
                 blueBird.each(listofPassingData, (passeddataElement) => {
                     return new Promise(resolve => {
-                        describe('Testing Create Table Mongo Service', async function () {
+                        describe('Testing Table Mongo Service', async function () {
                             let nameOfTableEntry = passeddataElement.locationOfModel.split('/')[passeddataElement.locationOfModel.split('/').length - 1];
                             let shouldFail=passeddataElement.failed;
                             let dataGoingToAdd=passeddataElement.objectToPassIntoFunction;
-                            it(`Should add ${JSON.stringify(dataGoingToAdd)} in to table name:"${nameOfTableEntry}"`, async () => {
-                                let data = await mongoService.module.mongoOperationExceution(passeddataElement);
-                                checkValue(typeof (data.val), "object", `response is array in creation api response of ${nameOfTableEntry}`,shouldFail);
-                                checkValue(data.val.length, 1, `response created multiple entries or no entries in creation api response of ${nameOfTableEntry}`,shouldFail);
-                                resolve(true);
+                            it(`Should check ${passeddataElement.functioName} with ${JSON.stringify(dataGoingToAdd)} in to table name:"${nameOfTableEntry}"`, async () => {
+                                    let data = await mongoService.module.mongoOperationExceution(passeddataElement);
+                                    checkValue(typeof (data.val), "object", `response is array in creation api response of ${nameOfTableEntry}`,shouldFail);
+                                    checkValue(data.val.length, 1, `response created multiple entries or no entries in creation api response of ${nameOfTableEntry}`,shouldFail);
+                                    resolve(true);
                             });
                         });
                     });
@@ -62,7 +70,18 @@ describe('Testing Mongo Service', function () {
                         });
                     });
                 }).catch(e => {
-                    resolve();
+                    describe('Testing drop Table Mongo Service', async function () {
+                        it("Should Clear db", () => {
+                            return clearDB().then(data => {
+                                let shouldFail=false;
+                                checkValue(data.success, true, "Data addition success is true",shouldFail);
+                                checkValue(typeof (data.val), "string", "Db drop respose is string",shouldFail);
+                                checkValue(data.val, "DB is droped.", "response is db dropped as we expect.",shouldFail);
+                                resolve();
+                            });
+                        });
+                    });
+                    //resolve();
                 });
             }
            
@@ -100,3 +119,24 @@ async function clearDB() {
         });
     });
 }
+
+
+/**
+ * ,
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/user",
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": true,
+            "Shouldtest": false
+        }
+ */

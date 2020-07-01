@@ -261,7 +261,8 @@
                         "reAssigning": true
                     }
                 }
-            }
+            },
+            "Shouldtest": true
         },
         {
             "functioName": "createNewEntry",
@@ -325,7 +326,8 @@
                     }
                 }
             },
-            "failed": false
+            "failed": false,
+            "Shouldtest": true
         },
         {
             "functioName": "createNewEntry",
@@ -383,7 +385,8 @@
                     }
                 }
             },
-            "failed": false
+            "failed": false,
+            "Shouldtest": true
         },
         {
             "functioName": "createNewEntry",
@@ -441,7 +444,8 @@
                     }
                 }
             },
-            "failed": true
+            "failed": true,
+            "Shouldtest": true
         },
         {
             "functioName": "createNewEntry",
@@ -505,7 +509,8 @@
                     }
                 }
             },
-            "failed": true
+            "failed": true,
+            "Shouldtest": true
         },
         {
             "functioName": "createNewEntry",
@@ -572,7 +577,208 @@
                     }
                 }
             },
-            "failed": true
+            "failed": true,
+            "Shouldtest": true
+        },
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/user",
+            "objectToPassIntoFunction": {
+                "username": "zealshah96"
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "Shouldtest": true
+        },
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/user",
+            "objectToPassIntoFunction": {
+                "username": "zealshah96"
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": true,
+            "Shouldtest": true
+        },
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/user",
+            "objectToPassIntoFunction": {},
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": false,
+            "Shouldtest": true
+        },
+        {
+            "functioName": "createNewEntry",
+            "locationOfModel": "./model/user",
+            "objectToPassIntoFunction": {},
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": true,
+            "Shouldtest": true
+        },
+        {
+            "functioName": "findAll",
+            "locationOfModel": "./model/user",
+            "objectToPassIntoFunction": {
+                "filterCondition": {
+                    "username": "zealshah96"
+                }
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": false
+        },
+        {
+            "functioName": "updateOne",
+            "locationOfModel": "./model/user",
+            "objectToPassIntoFunction": {
+                "filterCondition": {
+                    "username": "zealshah96"
+                },
+                "updatedata": {
+                    "username": "updateone96"
+                }
+            },
+            "operationsContext": {
+                "findValuesBeforeUpdate": {
+                    "functioName": "findAll",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "filterCondition": {
+                            "username": "zealshah96"
+                        }
+                    }
+                }
+            },
+            "failed": false
+        },
+        {
+            "functioName": "findAll",
+            "locationOfModel": "./model/user",
+            "objectToPassIntoFunction": {
+                "filterCondition": {
+                    "username": "updateone96"
+                }
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": false
+        },
+        {
+            "functioName": "updateAll",
+            "locationOfModel": "./model/user",
+            "objectToPassIntoFunction": {
+                "filterCondition": {
+                    "username": "updateone96"
+                },
+                "updatedata": {
+                    "username": "updateAll96"
+                }
+            },
+            "operationsContext": {
+                "findValuesBeforeUpdate": {
+                    "functioName": "findAll",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "filterCondition": {
+                            "username": "updateone96"
+                        }
+                    }
+                }
+            },
+            "failed": false
+        },
+        {
+            "functioName": "findAll",
+            "locationOfModel": "./model/user",
+            "objectToPassIntoFunction": {
+                "filterCondition": {
+                    "username": "updateAll96"
+                }
+            },
+            "operationsContext": {
+                "notAllowedSameValueAddition": {
+                    "functioName": "findCount",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "passParentFunctionData": true,
+                        "reAssigning": true
+                    }
+                }
+            },
+            "failed": false
+        },
+        {
+            "functioName": "deleteOne",
+            "locationOfModel": "./model/user",
+            "objectToPassIntoFunction": {
+                "filterCondition": {
+                    "username": "updateAll96"
+                }
+            },
+            "operationsContext": {
+                "findValuesBeforeUpdate": {
+                    "functioName": "findAll",
+                    "locationOfModel": "./model/user",
+                    "objectToPassIntoFunction": {
+                        "filterCondition": {
+                            "username": "updateAll96"
+                        }
+                    }
+                }
+            },
+            "failed": false
         }
     ]
 }

@@ -51,7 +51,7 @@
     "mongo": "node ./Service/mongo/index.js ",
     "soft-deploy": "npm run npm:install && npm test && git add . && git commit -m \"commit changes\" && git push origin finalVersion",
     "start": "npm run mongo",
-    "test": " mocha.cmd ./test/mongo.js dev_config_test.json --exit",
+    "test": "mocha.cmd ./test/mongo.js dev_config_test.json --exit --timeout=50000",
     "update": "git checkout finalVersion && git pull origin finalVersion",
     "npm:install": "npm install && npm run git && npm run update",
     "git": "git init && git remote remove origin && git remote add origin https://github.com/ZealShah96/Mongo_Mangoose_helper.git -f"

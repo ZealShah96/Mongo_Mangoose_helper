@@ -29,7 +29,7 @@ let mongoConnectionIndex = 0;
 module.mongoOperationExceution = (mongoOperation) => {
     return new Promise((resolve, reject) => {
         let { functioName, locationOfModel, objectToPassIntoFunction, operationsContext } = mongoOperation;
-        if (!_.isEmpty(functioName) && !_.isEmpty(locationOfModel) && !_.isEmpty(objectToPassIntoFunction)) {
+        if (!_.isEmpty(functioName) && !_.isEmpty(locationOfModel) && !_.isEmpty(JSON.stringify(objectToPassIntoFunction))) {
             let modelName=require(path.resolve(locationOfModel)).model.modelName;
             let perameterToPassedInFunction = {};
             perameterToPassedInFunction["locationOfModel"] = locationOfModel;
@@ -96,7 +96,7 @@ module.createNewEntry = (passeddata) => {
         Promise.all(allPromise).then(objectToPassIntoFunction => {
             let flattenObjects = module.flattenPromiseObject(objectToPassIntoFunction);
             let { notAllowedAttributes } = flattenObjects;
-            if (!_.isEmpty(flattenObjects.objectToPassIntoFunction)) {
+            if (!_.isEmpty(flattenObjects.objectToPassIntoFunction) && flattenObjects.objectToPassIntoFunction!=1) {
                 mongo_connection.create(flattenObjects.objectToPassIntoFunction).then(createdData => {
                     let passingDataForGetAllAfterNewEntryCreation = {
                         data: {
@@ -116,7 +116,7 @@ module.createNewEntry = (passeddata) => {
             }
             else {
                 debug("I think someone try same data addition again.")
-                return resolve(`I think someone try to add this ${flattenObjects.objectToPassIntoFunction} again`);
+                return resolve(`I think someone try to add this ${data} again`);
             }
         }).catch(e => {
             return reject(`error Occured:${e}`);
@@ -151,8 +151,8 @@ module.findCount = (passeddata) => {
                     filterCondition[primaryKeyFromTable] = data[primaryKeyFromTable];
                 }
                 mongo_connection.countDocuments(filterCondition, (err, res) => {
-                    if (res > 0) {
-                        return resolve(null);
+                    if (res>0) {
+                        return resolve(res);
                     }
                     return resolve(parentData);
                 }).catch(e => {
