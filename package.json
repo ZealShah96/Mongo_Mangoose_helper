@@ -48,7 +48,7 @@
     "debug": "NODE_ENV=dev_rest_api DEBUG='*Service' node --nolazy --inspect-brk=9229 checkService.js",
     "debug_DebugService": "DEBUG=* node --nolazy --inspect-brk=9229 ./Service/debug/debugService.js",
     "deploy": "npm run soft-deploy && npm verison patch && npm publish",
-    "mongo": "node ./Service/mongo/index.js",
+    "mongo": "node ./Service/mongo/index.js ",
     "soft-deploy": "npm run npm:install && npm test && git add . && git commit -m \"commit changes\" && git push origin finalVersion",
     "start": "npm run mongo",
     "test": " mocha.cmd ./test/mongo.js dev_config_test.json --exit",
