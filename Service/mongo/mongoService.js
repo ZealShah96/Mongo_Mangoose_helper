@@ -9,7 +9,7 @@ let mongooseDefaultConnectionValues = {
     options: {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        // useCreateIndex: true,
+        useCreateIndex: true,
         useFindAndModify: false,
         // autoIndex: false, // Don't build indexes
         poolSize: 10, // Maintain up to 10 socket connections
@@ -116,7 +116,7 @@ module.createNewEntry = (passeddata) => {
             }
             else {
                 debug("I think someone try same data addition again.")
-                return resolve(`I think someone try to add this ${data} again`);
+                return resolve(`I think someone try to add this ${JSON.stringify(data)} again.`);
             }
         }).catch(e => {
             return reject(`error Occured:${e}`);
@@ -457,7 +457,7 @@ module.creatingFilterConditionBasedOnUpdatedData = (updatedData) => {
 module.getTempModeldata = (modelLocation, data) => {
     let model = require(path.resolve(modelLocation)).model;
     let tempdata = new model(data);
-    return tempdata;
+    return tempdata._doc;
 }
 
 module.flattenPromiseObject = (array) => {
