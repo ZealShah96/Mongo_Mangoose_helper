@@ -56,5 +56,5 @@
     "npm:install": "npm install && npm run git && npm run update",
     "git": "git init && git remote remove origin && git remote add origin https://github.com/ZealShah96/Mongo_Mangoose_helper.git -f"
   },
-  "version": "3.0.21"
+  "version": "3.0.22"
 }
