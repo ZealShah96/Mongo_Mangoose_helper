@@ -20,7 +20,7 @@ let listofPassingData = [];
 describe('Testing Mongo Service', function () {
     it('Testing API for Table', async function () {
         return new Promise(async (resolve, reject) => {
-            let listofPassingData = await configPerameterfetch("tests");
+            let listofPassingData = require('./../log/final_Test_results.json').tests;
             //  expect(value).equal(1);
             listofPassingData=listofPassingData.filter(element=>{
                 if(_.isBoolean(element.Shouldtest) && element.Shouldtest){
@@ -49,15 +49,23 @@ describe('Testing Mongo Service', function () {
                             let nameOfTableEntry = passeddataElement.locationOfModel.split('/')[passeddataElement.locationOfModel.split('/').length - 1];
                             let shouldFail=passeddataElement.failed;
                             let dataGoingToAdd=passeddataElement.objectToPassIntoFunction;
+                            let testData=passeddataElement.testData;
                             it(`Should check ${passeddataElement.functioName} with ${JSON.stringify(dataGoingToAdd)} in to table name:"${nameOfTableEntry}"`, async () => {
                                     let data = await mongoService.module.mongoOperationExceution(passeddataElement);
-                                    checkValue(typeof (data.val), "object", `response is array in creation api response of ${nameOfTableEntry}`,shouldFail);
-                                    checkValue(data.val.length, 1, `response created multiple entries or no entries in creation api response of ${nameOfTableEntry}`,shouldFail);
+                                    data.val=_.isArray(data.val)?flattenPromiseObject(data.val):data.val;
+                                    passeddataElement.response=data;
+                                    checkValue(JSON.stringify(data), JSON.stringify(passeddataElement.response), `response is array in creation api response of ${nameOfTableEntry}`,false);
+                                    listOfPassingData.push(passeddataElement);
                                     resolve(true);
                             });
                         });
                     });
                 }).then(res => {
+                    require('fs').writeFile(`./log/final_Test_results${Date.now().toString()}.json`,JSON.stringify(listOfPassingData),(err)=>{
+                        if(err){
+                            console.log(err);
+                        }
+                    });
                     describe('Testing drop Table Mongo Service', async function () {
                         it("Should Clear db", () => {
                             return clearDB().then(data => {
@@ -89,6 +97,26 @@ describe('Testing Mongo Service', function () {
     });
 });
 
+
+function testDataArrayCheckValue(testValues,data){
+    testValues.forEach((test, index, array) => {
+       // _.map(test,(value,key)=>{
+           let {actual,pre,expect,test_message,failed}=test;
+           if(!_.isEmpty(pre)){
+            actual=support[pre](data[actual]);
+           }
+            checkValue(actual,expect,test_message,_.isEmpty(failed)?false:true);
+       // });
+    });
+}
+let support={};
+support.typeOf=(data)=>{
+    return typeof(data);
+}
+
+
+
+
 function checkValue(actual, expected, message,failed,errorMessage) {
     describe(`          ${actual}==${expected} ${failed?"with fail expected":"with success expected"} `, () => {
         it(`${message} ${failed?"with fail expected":""}`, () => {
@@ -118,6 +146,19 @@ async function clearDB() {
             resolve(data);
         });
     });
+}
+
+function flattenPromiseObject(array){
+    let flattenObjects = {};
+    array.forEach((value, index, array) => {
+        Object.keys(value).forEach((key, index, array) => {
+            if(key!="id"){
+                flattenObjects[key] = value[key];
+            }
+           
+        });
+    });
+    return flattenObjects;
 }
 
 
