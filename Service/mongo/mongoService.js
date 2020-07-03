@@ -403,6 +403,7 @@ module.fetchNotAllowedAttributes = (modelName, operation, passedFilterdata) => {
             let { skip, limit, notAllowedToTouch, requiredFields, primaryKey } = filterAttributeFetchedData;
 
             filterAttributeFetchedData.notAllowedToTouch.push("isNew");
+            notAllowedToTouch=_.difference(notAllowedToTouch,requiredFields);
             let notAllowedAttributes = _.reduce(notAllowedToTouch, function (obj, param) {
                 obj[param] = 0
                 return obj;
