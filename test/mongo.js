@@ -61,7 +61,7 @@ describe('Testing Mongo Service', function () {
                         });
                     });
                 }).then(res => {
-                    require('fs').writeFile(`./log/final_Test_results${Date.now().toString()}.json`,JSON.stringify(listOfPassingData),(err)=>{
+                    require('fs').writeFile(`./log/final_Test_results_ignore_${Date.now().toString()}.json`,JSON.stringify(listOfPassingData),(err)=>{
                         if(err){
                             console.log(err);
                         }
