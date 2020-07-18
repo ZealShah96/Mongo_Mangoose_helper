@@ -333,7 +333,7 @@ module.deleteOne = (passeddata) => {
                     },
                     "operationsContext": {
                         "findValuesBeforeUpdate": {
-                            "functioName": "findAll", "locationOfModel": "./model/user", "objectToPassIntoFunction": { "filterCondition": filterCondition }
+                            "functioName": "findAll", "locationOfModel": locationOfModel, "objectToPassIntoFunction": { "filterCondition": filterCondition }
                         }
                     },
                     "locationOfModel": locationOfModel
